@@ -53,13 +53,13 @@ io.on("connection", (socket) =>
     joystick["righty"] = arg.right.y;
     let jsonJoystick = JSON.stringify(joystick);
     console.log(jsonJoystick);
-    //port.write(jsonJoystick+"\n");
+    port.write(jsonJoystick+"\n");
   });
 });
 
 
 
-/*
+
 const port = new SerialPort({
   path: '/dev/ttyUSB0',
   baudRate: 115200,
@@ -68,7 +68,7 @@ const port = new SerialPort({
 const parser = new ReadlineParser();
 port.pipe(parser);
 parser.on('data', console.log);
-*/
+
 
 
 console.log("Server started");
