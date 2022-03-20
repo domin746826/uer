@@ -1,5 +1,7 @@
 # UER
-Universal Exploring Rover <br>
-https://domintech.ddns.net/js/projects/uer/ <br>
-To get it working at your own you need to download all models at https://domintech.ddns.net/js/projects/uer/models/ <br>
+Universal Exploring Rover base controller code<br>
+If you are looking for visualisation, it is available here https://domintech.ddns.net/js/projects/uer/ <br>
+<br><br>
+You need socketio, serialport and express to get it running
+
 Authors: Dominik S, Rafał S
