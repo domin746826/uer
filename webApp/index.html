@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>drone</title>
+        <script type="text/javascript" src="https://rawgit.com/131/h264-live-player/master/vendor/dist/http-live-player.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/dist/jmuxer.js"></script>
+        <script src="/dist/Controller.min.js"></script>
+
+        <style>
+        video
+        {
+            width: 1200px;
+            height: 900px;
+        }
+
+
+        body
+        {
+            background-color: #111113;
+        }
+
+        .telemetry
+        {
+            display: inline-block;
+            background-color: #1c1c1e;
+            font-family: sans-serif;
+            font-size: 30px;
+            color:  white;
+            padding: 14px;
+            width: 500px;
+            height: 600px;
+            float: left;
+
+            margin: 20px;
+
+        }
+
+        .video
+        {
+            display: inline-block;
+
+            background-color: black;
+            font-family: sans-serif;
+            font-size: 30px;
+            color:  white;
+            padding:  10px;
+            float: left;
+        }
+
+	#joystickLeft
+	{
+		border:5px solid lightgray;
+		border-radius: 50%;
+		background-color: #222224;
+		margin: 20px;
+	}
+
+	#joystickRight
+	{
+		border:5px solid lightgray;
+		border-radius: 50%;
+		background-color: #222224;
+		margin: 20px;
+	}
+        </style>
+    </head>
+
+    <body>
+        
+        <div class="all">
+            <div class="telemetry">
+                <!-- throttle: <span id="throttleVal">0</span>%<br>
+                rotation: <span id="rotation">0</span>%<br><br>
+
+                move forward/backward: <span id="moveFb">0</span>%<br>
+                move left/right: <span id="moveLr">0</span>% -->
+                FPS: <span id="fps"></span><br>
+
+		<canvas id="joystickLeft" width="100" height="100"></canvas>
+		<canvas id="joystickRight" width="100" height="100"></canvas>
+            </div>
+            <div class="video"><video width="100%" autoplay="true" muted="muted" id="player"></video></div>
+        </div>
+    
+
+    
+
+    <script>
+    let socket = io.connect('192.168.1.46:80');
+
+	
+
+    let jmuxer = new JMuxer(
+    {
+        node: 'player',
+        mode: 'video',
+        debug: false,
+        fps: 30,
+        flushingTime: 10
+    });
+
+
+    socket.emit("startStream", "rtgeds");
+    let firstFrame = true;
+
+    socket.on('videoStream', (chunk) =>
+    {
+        jmuxer.feed(
+        {
+             video: new Uint8Array(chunk)
+        });
+    });
+
+    Controller.search();
+
+    let rawJoystick = 
+    {
+        left: 
+        {
+            x: 0,
+            y: 0/*,
+            elementHandler:
+            {
+                x: document.getElementById("rotation"),
+                y: document.getElementById("throttleVal")
+            }*/
+        },
+        right:
+        {
+            x: 0,
+            y: 0/*,
+            elementHandler:
+            {
+                x: document.getElementById("moveLr"),
+                y: document.getElementById("moveFb")
+            }*/
+        }
+    };
+
+    let filteredJoystick = 
+    {
+        left: 
+        {
+            x: 0,
+            y: 0/*,
+            elementHandler:
+            {
+                x: document.getElementById("rotation"),
+                y: document.getElementById("throttleVal")
+            }*/
+        },
+        right:
+        {
+            x: 0,
+            y: 0/*,
+            elementHandler:
+            {
+                x: document.getElementById("moveLr"),
+                y: document.getElementById("moveFb")
+            }*/
+        }
+    };
+
+        
+    window.addEventListener('gc.controller.found', function(event)
+    {
+        var controller = event.detail.controller;
+        console.log("Controller found at index " + controller.index + ".");
+        console.log("'" + controller.name + "' is ready!");
+    }, false);
+
+    window.addEventListener('gc.analog.start', onJoystickChange);
+    window.addEventListener('gc.analog.hold', onJoystickChange);
+    window.addEventListener('gc.analog.change', onJoystickChange);
+    window.addEventListener('gc.analog.end', onJoystickChange);
+
+	window.addEventListener('gc.button.press', function(event)
+	{
+	    switch(event.detail.name)
+		{
+		    case 'START':
+		        console.log("started");
+		        break;
+
+		    /*case 'RIGHT_ANALOG_STICK':
+		        joystick.right.x = Math.floor(event.detail.position.x*100);
+		        joystick.right.y = -Math.floor(event.detail.position.y*100);
+		        break;*/
+		}
+	}, false);
+
+    function onJoystickChange(event)
+    {
+        var stick = event.detail;
+        //console.log(stick);
+        switch(event.detail.name)
+        {
+            case 'LEFT_ANALOG_STICK':
+            {
+                rawJoystick.left.x = Math.floor(event.detail.position.x*100);
+                rawJoystick.left.y = -Math.floor(event.detail.position.y*100);
+            }
+            break;
+
+            case 'RIGHT_ANALOG_STICK':
+            {
+                rawJoystick.right.x = Math.floor(event.detail.position.x*100);
+                rawJoystick.right.y = -Math.floor(event.detail.position.y*100);
+            }
+            break;
+        }
+    }
+
+
+
+	function redrawJoystick(joystickCanvas, x, y)
+	{
+		let angle = Math.atan2(y, x);
+		let magnitude = Math.sqrt(x*x + y*y);
+
+		if(magnitude > 100) magnitude = 100;
+
+		xInCircle = magnitude * Math.cos( angle );
+		yInCircle = magnitude * Math.sin( angle );
+
+		let ctx = joystickCanvas.getContext("2d");
+		ctx.clearRect(0, 0, joystickCanvas.width, joystickCanvas.height);
+		ctx.beginPath();
+		ctx.arc(50+xInCircle/2, 50-yInCircle/2, 20, 0, 2 * Math.PI);
+		ctx.stroke();
+		ctx.fillStyle = 'gray';
+		ctx.fill();
+	}
+
+	let start = null;
+	let joystickLeftCanvas = document.getElementById("joystickLeft");
+	let joystickRightCanvas = document.getElementById("joystickRight");
+    let fpsHandler = document.getElementById("fps");
+
+    let prevTime = performance.now();
+
+    function displayFps(fps)
+    {
+        fpsHandler.textContent = fps;
+    }
+
+    let framesAmount = 0;
+    let fps = 0;
+    
+    window.setInterval(function(){
+        displayFps(Math.round(fps));
+    }, 200);
+
+    window.setInterval(() => {
+        socket.emit("joystick", filteredJoystick);
+    }, 40);
+
+
+
+    let currentJoystickPos = 0;
+
+
+	function gameLoop()
+	{
+        let time = performance.now(); 
+        window.requestAnimationFrame(gameLoop);  
+        const delta = ( time - prevTime ) / 1000;
+        fps = (15*fps + 1/delta)/16;
+
+        filteredJoystick.left.x += clamp(rawJoystick.left.x - filteredJoystick.left.x, -5, 5);
+        filteredJoystick.left.y += clamp(rawJoystick.left.y - filteredJoystick.left.y, -5, 5);
+        filteredJoystick.right.x += clamp(rawJoystick.right.x - filteredJoystick.right.x, -5, 5);
+        filteredJoystick.right.y += clamp(rawJoystick.right.y - filteredJoystick.right.y, -5, 5);
+
+
+		redrawJoystick(joystickLeftCanvas, filteredJoystick.left.x, filteredJoystick.left.y);
+		redrawJoystick(joystickRightCanvas, filteredJoystick.right.x, filteredJoystick.right.y);
+
+		/*joystick.left.elementHandler.x.textContent = joystick.left.x;
+		joystick.left.elementHandler.y.textContent = joystick.left.y;
+
+		joystick.right.elementHandler.x.textContent = joystick.right.x;
+		joystick.right.elementHandler.y.textContent = joystick.right.y;*/
+        //console.log(joystick);
+        prevTime = time;
+	}
+
+	window.requestAnimationFrame(gameLoop);
+
+    function clamp(number, min, max)
+    {
+        return Math.max(min, Math.min(number, max));
+    }
+
+    </script> 
+
+    
+    </body>
+</html>
