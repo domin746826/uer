@@ -15,12 +15,28 @@ const httpServer = require("http").createServer(app);
 const socketIO = require("socket.io")
 const {SerialPort, ReadlineParser} = require('serialport')
 
-let joystick = 
+let joystick;
+
+let roverMotionData = 
 {
-    leftx: 0,
-    lefty: 0,
-    rightx: 0,
-    righty: 0 
+	type: "motionData",
+
+	left:
+	{
+		frontServo: 90,
+		frontPower: 0,
+
+		backServo: 90,
+		backPower: 0,
+	},
+	right:
+	{	
+		frontServo: 90,
+		frontPower: 0,
+
+		backServo: 90,
+		backPower: 0,
+	}
 };
 
 const options = {};
@@ -30,46 +46,45 @@ httpServer.listen(80);
 app.use(express.static(__dirname));
 app.get('/', (req, res) =>
 {
-  res.sendFile("./index.html");
+	res.sendFile("./index.html");
 })
 
 io.on("connection", (socket) =>
 {
-  socket.on("startStream", (arg) => 
-  {
-    console.log("streamStarted");
+	//uncomment if you use raspberry pi native camera and you need h264 stream	
+	/*socket.on("startStream", (arg) => 
+	{
+		console.log("streamStarted");
+		let stream = raspividStream();
+		stream.on('data', (data) => {
+	        	socket.emit("videoStream", data)
+		});
+	});*/
 
-    /*let stream = raspividStream();
-    stream.on('data', (data) => {
-        socket.emit("videoStream", data)
-    });*/
-  });
-
-  socket.on("joystick", (arg) =>
-  {
-    joystick["leftx"] = arg.left.x;
-    joystick["lefty"] = arg.left.y;
-    joystick["rightx"] = arg.right.x;
-    joystick["righty"] = arg.right.y;
-    let jsonJoystick = JSON.stringify(joystick);
-    console.log(jsonJoystick);
-    port.write(jsonJoystick+"\n");
-  });
+	socket.on("joystick", (arg) =>
+	{
+		joystick = arg;
+	});
 });
 
+let roverLoop = window.setInterval(()=>
+{	
+	//TODO calculate wheels speed, direction and steer angle from object "joystick" and put it in "roverMotionData"
+
+	let roverMotionDataJson = JSON.stringify(roverMotionData);
+	port.write(roverMotionDataJson + "\n");	
+}, 40);
 
 
 
 const port = new SerialPort({
-  path: '/dev/ttyUSB0',
-  baudRate: 115200,
+	path: '/dev/ttyUSB0',
+	baudRate: 115200,
 });
 
 const parser = new ReadlineParser();
 port.pipe(parser);
 parser.on('data', console.log);
-
-
 
 console.log("Server started");
 
