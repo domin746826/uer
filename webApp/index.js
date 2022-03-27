@@ -15,7 +15,19 @@ const httpServer = require("http").createServer(app);
 const socketIO = require("socket.io")
 const {SerialPort, ReadlineParser} = require('serialport')
 
-let joystick;
+let joystick = 
+{
+	left:
+	{
+		x: 0,
+		y: 0
+	},
+	right:
+	{
+		x: 0,
+		y: 0,
+	}
+};
 
 let roverMotionData = 
 {
@@ -67,12 +79,29 @@ io.on("connection", (socket) =>
 	});
 });
 
-let roverLoop = window.setInterval(()=>
+let roverLoop = setInterval(()=>
 {	
-	//TODO calculate wheels speed, direction and steer angle from object "joystick" and put it in "roverMotionData"
+	//TODO calculate wheels speed and direction from object "joystick" and put it in "roverMotionData"
+	//roverX is distance from center to outer wheels in X axis
+	//roverY is distance from center to outer wheels in Y axis
+	//(we assume here that the Y and Z axes are swapped)
+	let roverX = 214;
+	let roverY = 384;
+	
+	if(!inRange(joystick.right.x, -1, 1))
+	{
+		let steeringRadius = 21400 / joystick.right.x;
+		let angleLeft = (Math.atan(roverY / (steeringRadius + roverX)) * 180) / Math.PI;
+		let angleRight = (Math.atan(roverY / (steeringRadius - roverX)) * 180) / Math.PI;
 
-	let roverMotionDataJson = JSON.stringify(roverMotionData);
-	port.write(roverMotionDataJson + "\n");	
+		roverMotionData.left.frontServo = angleLeft + 90;
+		roverMotionData.left.backServo = -angleLeft + 90;
+		roverMotionData.right.frontServo = angleRight + 90;
+		roverMotionData.right.backServo = angleRight + 90;
+		
+		let roverMotionDataJson = JSON.stringify(roverMotionData);
+		port.write(roverMotionDataJson + "\n");	
+	}
 }, 40);
 
 
@@ -87,5 +116,10 @@ port.pipe(parser);
 parser.on('data', console.log);
 
 console.log("Server started");
+
+function inRange(x, min, max)
+{
+	return x >= min && x <= max;
+}
 
 
