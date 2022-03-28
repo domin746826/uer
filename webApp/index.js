@@ -77,34 +77,37 @@ io.on("connection", (socket) =>
 	{
 		joystick = arg;
 	});
+
+
+	let roverLoop = setInterval(()=>
+	{	
+		//TODO calculate wheels speed and direction from object "joystick" and put it in "roverMotionData"
+		//roverX is distance from center to outer wheels in X axis
+		//roverY is distance from center to outer wheels in Y axis
+		//(we assume here that the Y and Z axes are swapped)
+		let roverX = 214;
+		let roverY = 384;
+	
+		if(!inRange(joystick.right.x, -1, 1))
+		{
+			let steeringRadius = 21400 / joystick.right.x;
+			let angleLeft = (Math.atan(roverY / (steeringRadius + roverX)) * 180) / Math.PI;
+			let angleRight = (Math.atan(roverY / (steeringRadius - roverX)) * 180) / Math.PI;
+
+			roverMotionData.left.frontServo = angleLeft + 90;
+			roverMotionData.left.backServo = -angleLeft + 90;
+			roverMotionData.right.frontServo = angleRight + 90;
+			roverMotionData.right.backServo = -angleRight + 90;
+		
+			let roverMotionDataJson = JSON.stringify(roverMotionData);
+			socket.emit("roverStatus", roverMotionData);
+			//port.write(roverMotionDataJson + "\n");	
+		}
+	}, 40);
 });
 
-let roverLoop = setInterval(()=>
-{	
-	//TODO calculate wheels speed and direction from object "joystick" and put it in "roverMotionData"
-	//roverX is distance from center to outer wheels in X axis
-	//roverY is distance from center to outer wheels in Y axis
-	//(we assume here that the Y and Z axes are swapped)
-	let roverX = 214;
-	let roverY = 384;
-	
-	if(!inRange(joystick.right.x, -1, 1))
-	{
-		let steeringRadius = 21400 / joystick.right.x;
-		let angleLeft = (Math.atan(roverY / (steeringRadius + roverX)) * 180) / Math.PI;
-		let angleRight = (Math.atan(roverY / (steeringRadius - roverX)) * 180) / Math.PI;
 
-		roverMotionData.left.frontServo = angleLeft + 90;
-		roverMotionData.left.backServo = -angleLeft + 90;
-		roverMotionData.right.frontServo = angleRight + 90;
-		roverMotionData.right.backServo = angleRight + 90;
-		
-		let roverMotionDataJson = JSON.stringify(roverMotionData);
-		port.write(roverMotionDataJson + "\n");	
-	}
-}, 40);
-
-
+/*
 
 const port = new SerialPort({
 	path: '/dev/ttyUSB0',
@@ -114,7 +117,7 @@ const port = new SerialPort({
 const parser = new ReadlineParser();
 port.pipe(parser);
 parser.on('data', console.log);
-
+*/
 console.log("Server started");
 
 function inRange(x, min, max)

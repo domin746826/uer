@@ -6,7 +6,7 @@
         <script src="/socket.io/socket.io.js"></script>
         <script src="/dist/jmuxer.js"></script>
         <script src="/dist/Controller.min.js"></script>
-
+	<script src="/rover.js"></script>
         <style>
         video
         {
@@ -86,34 +86,36 @@
 
     
 
-    <script>
-    //let socket = io.connect('192.168.1.46:80');
+<script>
+	//let socket = io.connect('192.168.1.46:80');
 	const socket = io();
 
-	
+	//uncomment if you want to use raspberry pi native camera	
+/*
+	let jmuxer = new JMuxer(
+	{
+        	node: 'player',
+	        mode: 'video',
+        	debug: false,
+	        fps: 30,
+        	flushingTime: 10
+	});
 
-    let jmuxer = new JMuxer(
-    {
-        node: 'player',
-        mode: 'video',
-        debug: false,
-        fps: 30,
-        flushingTime: 10
-    });
+
+	socket.emit("startStream", "rtgeds");
+	let firstFrame = true;
+
+	socket.on('videoStream', (chunk) =>
+	{
+		jmuxer.feed(
+	        {
+        		video: new Uint8Array(chunk)
+		});
+	});
+*/
+	Controller.search();
 
 
-    socket.emit("startStream", "rtgeds");
-    let firstFrame = true;
-
-    socket.on('videoStream', (chunk) =>
-    {
-        jmuxer.feed(
-        {
-             video: new Uint8Array(chunk)
-        });
-    });
-
-    Controller.search();
 
     let rawJoystick = 
     {
@@ -234,65 +236,18 @@
 		ctx.fill();
 	}
 
-	let start = null;
 	let joystickLeftCanvas = document.getElementById("joystickLeft");
 	let joystickRightCanvas = document.getElementById("joystickRight");
-    let fpsHandler = document.getElementById("fps");
 
-    let prevTime = performance.now();
-
-    function displayFps(fps)
-    {
-        fpsHandler.textContent = fps;
-    }
-
-    let framesAmount = 0;
-    let fps = 0;
-    
-    window.setInterval(function(){
-        displayFps(Math.round(fps));
-    }, 200);
-
-    window.setInterval(() => {
-        socket.emit("joystick", filteredJoystick);
-    }, 40);
-
-
-
-    let currentJoystickPos = 0;
-
-
-	function gameLoop()
+	socket.on("roverStatus", (arg) =>
 	{
-        let time = performance.now(); 
-        window.requestAnimationFrame(gameLoop);  
-        const delta = ( time - prevTime ) / 1000;
-        fps = (15*fps + 1/delta)/16;
-
-        filteredJoystick.left.x += clamp(rawJoystick.left.x - filteredJoystick.left.x, -5, 5);
-        filteredJoystick.left.y += clamp(rawJoystick.left.y - filteredJoystick.left.y, -5, 5);
-        filteredJoystick.right.x += clamp(rawJoystick.right.x - filteredJoystick.right.x, -5, 5);
-        filteredJoystick.right.y += clamp(rawJoystick.right.y - filteredJoystick.right.y, -5, 5);
-
-
-		redrawJoystick(joystickLeftCanvas, filteredJoystick.left.x, filteredJoystick.left.y);
-		redrawJoystick(joystickRightCanvas, filteredJoystick.right.x, filteredJoystick.right.y);
-
-		/*joystick.left.elementHandler.x.textContent = joystick.left.x;
-		joystick.left.elementHandler.y.textContent = joystick.left.y;
-
-		joystick.right.elementHandler.x.textContent = joystick.right.x;
-		joystick.right.elementHandler.y.textContent = joystick.right.y;*/
-        //console.log(joystick);
-        prevTime = time;
-	}
-
-	window.requestAnimationFrame(gameLoop);
-
-    function clamp(number, min, max)
-    {
-        return Math.max(min, Math.min(number, max));
-    }
+		onRoverStatus(arg);
+	});
+	let prevTime = performance.now();
+	let framesAmount = 0;
+	let fps = 0;
+	let fpsHandler = document.getElementById("fps");
+	gameLoop();
 
     </script> 
 
