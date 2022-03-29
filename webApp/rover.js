@@ -7,7 +7,8 @@ window.setInterval(() =>
 function onRoverStatus(arg)
 {
 	//TODO display simplified 2D rover status
-	console.log(arg);
+	angleLeftHandler.innerText = Math.floor(arg.left.frontServo);
+	angleRightHandler.innerText = Math.floor(arg.right.frontServo);
 }
 
 

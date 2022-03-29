@@ -13,7 +13,7 @@ const express = require('express')
 const app = express()
 const httpServer = require("http").createServer(app);
 const socketIO = require("socket.io")
-const {SerialPort, ReadlineParser} = require('serialport')
+//const {SerialPort, ReadlineParser} = require('serialport')
 
 let joystick = 
 {
@@ -25,7 +25,7 @@ let joystick =
 	right:
 	{
 		x: 0,
-		y: 0,
+		y: 0
 	}
 };
 
@@ -97,12 +97,19 @@ io.on("connection", (socket) =>
 			roverMotionData.left.frontServo = angleLeft + 90;
 			roverMotionData.left.backServo = -angleLeft + 90;
 			roverMotionData.right.frontServo = angleRight + 90;
-			roverMotionData.right.backServo = -angleRight + 90;
-		
-			let roverMotionDataJson = JSON.stringify(roverMotionData);
-			socket.emit("roverStatus", roverMotionData);
-			//port.write(roverMotionDataJson + "\n");	
+			roverMotionData.right.backServo = -angleRight + 90;	
 		}
+		else
+		{
+			
+			roverMotionData.left.frontServo = joystick.right.x + 90;
+			roverMotionData.left.backServo = -joystick.right.x + 90;
+			roverMotionData.right.frontServo = joystick.right.x + 90;
+			roverMotionData.right.backServo = -joystick.right.x + 90;
+		}
+		let roverMotionDataJson = JSON.stringify(roverMotionData);
+		socket.emit("roverStatus", roverMotionData);
+		//port.write(roverMotionDataJson + "\n");
 	}, 40);
 });
 
