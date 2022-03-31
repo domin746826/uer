@@ -29,6 +29,20 @@ let joystick =
 	}
 };
 
+let roverSteeringCalculated = 
+{
+	left:
+	{
+		front: 0,
+		back: 0
+	},
+	right:
+	{
+		front: 0,
+		back: 0
+	}
+};
+
 let roverMotionData = 
 {
 	type: "motionData",
@@ -48,6 +62,11 @@ let roverMotionData =
 
 		backServo: 90,
 		backPower: 0,
+	},
+	debug:
+	{
+		steeringRadius: 0,
+		steeringY: 0
 	}
 };
 
@@ -91,13 +110,27 @@ io.on("connection", (socket) =>
 		if(!inRange(joystick.right.x, -1, 1))
 		{
 			let steeringRadius = 21400 / joystick.right.x;
-			let angleLeft = (Math.atan(roverY / (steeringRadius + roverX)) * 180) / Math.PI;
+			let steeringY = joystick.right.y * 4;
+			console.log(steeringY);
+			roverSteeringCalculated.left.front = (Math.atan((steeringY+roverY) / (steeringRadius + roverX)) * 180) / Math.PI;
+			roverSteeringCalculated.left.back = (Math.atan((steeringY-roverY) / (steeringRadius + roverX)) * 180) / Math.PI;
+			roverSteeringCalculated.right.front = (Math.atan((steeringY+roverY) / (steeringRadius - roverX)) * 180) / Math.PI;
+			roverSteeringCalculated.right.back = (Math.atan((steeringY-roverY) / (steeringRadius - roverX)) * 180) / Math.PI;
+			/*let angleLeft = (Math.atan(roverY / (steeringRadius + roverX)) * 180) / Math.PI;
 			let angleRight = (Math.atan(roverY / (steeringRadius - roverX)) * 180) / Math.PI;
 
 			roverMotionData.left.frontServo = angleLeft + 90;
 			roverMotionData.left.backServo = -angleLeft + 90;
 			roverMotionData.right.frontServo = angleRight + 90;
-			roverMotionData.right.backServo = -angleRight + 90;	
+			roverMotionData.right.backServo = -angleRight + 90;*/
+
+			roverMotionData.left.frontServo = roverSteeringCalculated.left.front + 90;
+			roverMotionData.left.backServo = roverSteeringCalculated.left.back + 90;
+			roverMotionData.right.frontServo = roverSteeringCalculated.right.front + 90;
+			roverMotionData.right.backServo = roverSteeringCalculated.right.back + 90;
+
+			roverMotionData.debug.steeringRadius = steeringRadius;
+			roverMotionData.debug.steeringY = steeringY;
 		}
 		else
 		{
@@ -106,6 +139,9 @@ io.on("connection", (socket) =>
 			roverMotionData.left.backServo = -joystick.right.x + 90;
 			roverMotionData.right.frontServo = joystick.right.x + 90;
 			roverMotionData.right.backServo = -joystick.right.x + 90;
+
+//			roverMotionData.debug.steeringY = steeringY;
+
 		}
 		let roverMotionDataJson = JSON.stringify(roverMotionData);
 		socket.emit("roverStatus", roverMotionData);

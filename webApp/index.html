@@ -132,13 +132,39 @@
 	let prevTime = performance.now();
 	let framesAmount = 0;
 	let fps = 0;
-	let currentRoverStatus;
+	let currentRoverStatus = 
+	{
+		type: "",
+         
+	        left:
+        	{
+                	frontServo: 90,
+	                frontPower: 0,
+                
+	                backServo: 90,   
+	                backPower: 0,
+        	},
+	        right:   
+        	{       
+        	        frontServo: 90,
+	                frontPower: 0,
+
+                	backServo: 90,
+        	        backPower: 0,
+	        },
+		debug:
+		{
+			steeringRadius: 0,
+			steeringY: 0
+		}
+	};
 	let fpsHandler = document.getElementById("fps");
 	let angleLeftHandler = document.getElementById("angleLeft");
 	let angleRightHandler = document.getElementById("angleRight");
 	let joystickLeftCanvas = document.getElementById("joystickLeft");
 	let joystickRightCanvas = document.getElementById("joystickRight");
 	let roverVisualisationCanvas = document.getElementById("roverVisualisation");
+	initRover();
 	gameLoop();
 
     </script> 

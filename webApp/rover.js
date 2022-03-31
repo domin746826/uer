@@ -46,6 +46,11 @@ function redrawRoverVisualisation(roverCanvas, roverStatus)
 	drawWheel(ctx, 50, 50, currentRoverStatus.left.frontServo);
 	drawWheel(ctx, 50+214/2, 50+384/2, currentRoverStatus.right.backServo);
 	drawWheel(ctx, 50, 50+384/2, currentRoverStatus.left.backServo);
+	
+	ctx.beginPath();
+	ctx.moveTo(50+214/2, 50);
+	ctx.lineTo(currentRoverStatus.debug.steeringRadius+214/2, currentRoverStatus.debug.steeringY+384/2);
+	ctx.stroke();
 }
 
 function drawWheel(ctx, x, y, angle)
@@ -56,7 +61,17 @@ function drawWheel(ctx, x, y, angle)
 	ctx.resetTransform();
 }
 
-
+function initRover()
+{
+	//smoothing joystick moves
+	let joystickSmooth = setInterval(() =>
+	{
+		filteredJoystick.left.x += clamp(rawJoystick.left.x - filteredJoystick.left.x, -5, 5);
+	       	filteredJoystick.left.y += clamp(rawJoystick.left.y - filteredJoystick.left.y, -5, 5);
+       		filteredJoystick.right.x += clamp(rawJoystick.right.x - filteredJoystick.right.x, -3, 3);
+	       	filteredJoystick.right.y += clamp(rawJoystick.right.y - filteredJoystick.right.y, -5, 5);
+	}, 25);
+}
 
 function gameLoop()
 {
@@ -64,12 +79,6 @@ function gameLoop()
 	window.requestAnimationFrame(gameLoop);  
 	const delta = ( time - prevTime ) / 1000;
        	fps = (15*fps + 1/delta)/16;
-
-	//smoothing joystick moves
-	filteredJoystick.left.x += clamp(rawJoystick.left.x - filteredJoystick.left.x, -5, 5);
-       	filteredJoystick.left.y += clamp(rawJoystick.left.y - filteredJoystick.left.y, -5, 5);
-       	filteredJoystick.right.x += clamp(rawJoystick.right.x - filteredJoystick.right.x, -3, 3);
-       	filteredJoystick.right.y += clamp(rawJoystick.right.y - filteredJoystick.right.y, -5, 5);
 
 	redrawJoystick(joystickLeftCanvas, filteredJoystick.left.x, filteredJoystick.left.y);
 	redrawJoystick(joystickRightCanvas, filteredJoystick.right.x, filteredJoystick.right.y);
