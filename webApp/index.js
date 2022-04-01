@@ -110,7 +110,7 @@ io.on("connection", (socket) =>
 		if(!inRange(joystick.right.x, -1, 1))
 		{
 			let steeringRadius = 21400 / joystick.right.x;
-			let steeringY = joystick.right.y * 4;
+			let steeringY = joystick.right.y * 8;
 			console.log(steeringY);
 			roverSteeringCalculated.left.front = (Math.atan((steeringY+roverY) / (steeringRadius + roverX)) * 180) / Math.PI;
 			roverSteeringCalculated.left.back = (Math.atan((steeringY-roverY) / (steeringRadius + roverX)) * 180) / Math.PI;
