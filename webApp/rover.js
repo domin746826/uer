@@ -79,10 +79,10 @@ function initRover()
 	//smoothing joystick moves
 	let joystickSmooth = setInterval(() =>
 	{
-		filteredJoystick.left.x += clamp(rawJoystick.left.x - filteredJoystick.left.x, -5, 5);
-	       	filteredJoystick.left.y += clamp(rawJoystick.left.y - filteredJoystick.left.y, -5, 5);
-       		filteredJoystick.right.x += clamp(rawJoystick.right.x - filteredJoystick.right.x, -3, 3);
-	       	filteredJoystick.right.y += clamp(rawJoystick.right.y - filteredJoystick.right.y, -5, 5);
+		filteredJoystick.left.x += clamp(rawJoystick.left.x - filteredJoystick.left.x, -4, 4);
+	       	filteredJoystick.left.y += clamp(rawJoystick.left.y - filteredJoystick.left.y, -4, 4);
+       		filteredJoystick.right.x += clamp(rawJoystick.right.x - filteredJoystick.right.x, -2, 2);
+	       	filteredJoystick.right.y += clamp(rawJoystick.right.y - filteredJoystick.right.y, -2, 2);
 	}, 25);
 }
 

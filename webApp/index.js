@@ -109,8 +109,8 @@ io.on("connection", (socket) =>
 	
 		if(!inRange(joystick.right.x, -1, 1))
 		{
-			let steeringRadius = 21400 / joystick.right.x;
-			let steeringY = joystick.right.y * 8;
+			let steeringRadius = 30000 / joystick.right.x;
+			let steeringY = joystick.right.y * 2;
 			//console.log(steeringY);
 			roverSteeringCalculated.left.front = (Math.atan((steeringY+roverY) / (steeringRadius + roverX)) * 180) / Math.PI;
 			roverSteeringCalculated.left.back = (Math.atan((steeringY-roverY) / (steeringRadius + roverX)) * 180) / Math.PI;
@@ -129,6 +129,12 @@ io.on("connection", (socket) =>
 			roverMotionData.right.frontServo = roverSteeringCalculated.right.front + 90;
 			roverMotionData.right.backServo = roverSteeringCalculated.right.back + 90;
 
+			
+			roverMotionData.left.frontServo = clamp(roverMotionData.left.frontServo, 10, 170);
+			roverMotionData.left.backServo = clamp(roverMotionData.left.backServo, 10, 170);
+			roverMotionData.right.frontServo = clamp(roverMotionData.right.frontServo, 10, 170);
+			roverMotionData.right.backServo = clamp(roverMotionData.right.backServo, 10, 170);
+
 			roverMotionData.debug.steeringRadius = steeringRadius;
 			roverMotionData.debug.steeringY = steeringY;
 		}
@@ -139,10 +145,10 @@ io.on("connection", (socket) =>
 			roverMotionData.right.frontServo = joystick.right.x + 90;
 			roverMotionData.right.backServo = -joystick.right.x + 90;
 
-			roverMotionData.left.frontServo = clamp(roverMotionData.left.frontServo, 0, 180);
-			roverMotionData.left.backServo = clamp(roverMotionData.left.backServo, 0, 180);
-			roverMotionData.right.frontServo = clamp(roverMotionData.right.frontServo, 0, 180);
-			roverMotionData.right.backServo = clamp(roverMotionData.right.backServo, 0, 180);
+			roverMotionData.left.frontServo = clamp(roverMotionData.left.frontServo, 10, 170);
+			roverMotionData.left.backServo = clamp(roverMotionData.left.backServo, 10, 170);
+			roverMotionData.right.frontServo = clamp(roverMotionData.right.frontServo, 10, 170);
+			roverMotionData.right.backServo = clamp(roverMotionData.right.backServo, 10, 170);
 
 //			roverMotionData.debug.steeringY = steeringY;
 
