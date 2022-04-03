@@ -107,10 +107,13 @@ io.on("connection", (socket) =>
 		let roverX = 227;
 		let roverY = 384;
 	
+		let steeringRadius;
+		let steeringY;
+
 		if(!inRange(joystick.right.x, -1, 1))
 		{
-			let steeringRadius = 30000 / joystick.right.x;
-			let steeringY = joystick.right.y * 2;
+			steeringRadius = 30000 / joystick.right.x;
+			steeringY = joystick.right.y * 2;
 			//console.log(steeringY);
 			roverSteeringCalculated.left.front = (Math.atan((steeringY+roverY) / (steeringRadius + roverX)) * 180) / Math.PI;
 			roverSteeringCalculated.left.back = (Math.atan((steeringY-roverY) / (steeringRadius + roverX)) * 180) / Math.PI;
@@ -137,6 +140,18 @@ io.on("connection", (socket) =>
 
 			roverMotionData.debug.steeringRadius = steeringRadius;
 			roverMotionData.debug.steeringY = steeringY;
+
+
+			let radiusDistance = Math.sqrt(Math.pow(steeringRadius, 2)+Math.pow(steeringY, 2))/100;
+			let powerLB = Math.floor(Math.sqrt(Math.pow(steeringY-roverY, 2) + Math.pow(steeringRadius+roverX, 2))/radiusDistance)/100;	
+			let powerLF = Math.floor(Math.sqrt(Math.pow(steeringY+roverY, 2) + Math.pow(steeringRadius+roverX, 2))/radiusDistance)/100;
+			let powerRB = Math.floor(Math.sqrt(Math.pow(steeringY-roverY, 2) + Math.pow(steeringRadius-roverX, 2))/radiusDistance)/100;
+			let powerRF = Math.floor(Math.sqrt(Math.pow(steeringY+roverY, 2) + Math.pow(steeringRadius-roverX, 2))/radiusDistance)/100;
+
+			roverMotionData.left.frontPower = powerLF*(joystick.left.y/2);
+			roverMotionData.left.backPower = powerLB*(joystick.left.y/2);
+			roverMotionData.right.frontPower = powerRF*(joystick.left.y/2);
+			roverMotionData.right.backPower = powerRB*(joystick.left.y/2);
 		}
 		else
 		{			
@@ -150,9 +165,18 @@ io.on("connection", (socket) =>
 			roverMotionData.right.frontServo = clamp(roverMotionData.right.frontServo, 10, 170);
 			roverMotionData.right.backServo = clamp(roverMotionData.right.backServo, 10, 170);
 
+			roverMotionData.left.frontPower = joystick.left.y/2;
+			roverMotionData.left.backPower = joystick.left.y/2;
+			roverMotionData.right.frontPower = joystick.left.y/2;
+			roverMotionData.right.backPower = joystick.left.y/2;
+
 //			roverMotionData.debug.steeringY = steeringY;
 
 		}
+
+
+		//console.log(powerLF + " " + powerRF + "        " + powerLB + " " + powerRB + "        radiusDistance" + Math.floor(radiusDistance*100)/100); 
+
 		let roverMotionDataJson = JSON.stringify(roverMotionData);
 		socket.emit("roverStatus", roverMotionData);
 		port.write(roverMotionDataJson + "\n");
