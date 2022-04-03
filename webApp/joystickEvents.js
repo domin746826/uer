@@ -45,6 +45,35 @@ window.addEventListener('gc.button.press', (event) =>
 		case 'START':
 			console.log("started");
 			break;
+
+		case 'LEFT_SHOULDER_BOTTOM':
+			//console.log(event);
+			//
+			rawJoystick.right.x = Math.floor(event.detail.value*200-100);
+			break;
+	}
+}, false);
+
+window.addEventListener('gc.button.hold', (event) =>
+{
+	switch(event.detail.name)
+	{
+		case 'LEFT_SHOULDER_BOTTOM':
+//			console.log(event.detail.value);
+			rawJoystick.right.x = Math.floor(event.detail.value*200-100);
+			break;
+	}
+}, false);
+
+
+window.addEventListener('gc.button.release', (event) =>
+{
+	switch(event.detail.name)
+	{
+		case 'LEFT_SHOULDER_BOTTOM':
+//			console.log(event.detail.value);
+			rawJoystick.right.x = Math.floor(event.detail.value*200-100);
+			break;
 	}
 }, false);
 
@@ -62,8 +91,9 @@ function onJoystickChange(event)
 
 		case 'RIGHT_ANALOG_STICK':
 		{
-			rawJoystick.right.x = Math.floor(event.detail.position.x*100);
-			rawJoystick.right.y = -Math.floor(event.detail.position.y*100);
+			rawJoystick.right.y = -Math.floor(event.detail.position.x*100);
+			//rawJoystick.right.x = -Math.floor(event.detail.position.y*100);
+			console.log(rawJoystick.right.x + " " + rawJoystick.right.y);
 		}
 		break;
 	}

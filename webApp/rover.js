@@ -42,26 +42,26 @@ function redrawRoverVisualisation(roverCanvas, roverStatus)
 
 	ctx.fillStyle = '#ddddff';
 
-	drawWheel(ctx, 300+214/2, 300-384/2, currentRoverStatus.right.frontServo);
-	drawWheel(ctx, 300-214/2, 300-384/2, currentRoverStatus.left.frontServo);
-	drawWheel(ctx, 300+214/2, 300+384/2, currentRoverStatus.right.backServo);
-	drawWheel(ctx, 300-214/2, 300+384/2, currentRoverStatus.left.backServo);
+	drawWheel(ctx, 300+227/2, 300-384/2, currentRoverStatus.right.frontServo);
+	drawWheel(ctx, 300-227/2, 300-384/2, currentRoverStatus.left.frontServo);
+	drawWheel(ctx, 300+227/2, 300+384/2, currentRoverStatus.right.backServo);
+	drawWheel(ctx, 300-227/2, 300+384/2, currentRoverStatus.left.backServo);
 	
 	ctx.beginPath();
-	ctx.moveTo(300+214/2, 300-384/2);
+	ctx.moveTo(300+227/2, 300-384/2);
 	ctx.lineTo(currentRoverStatus.debug.steeringRadius/2+300, currentRoverStatus.debug.steeringY/2+300);
 	ctx.stroke();
 
 	ctx.beginPath();
-	ctx.moveTo(300-214/2, 300-384/2);
+	ctx.moveTo(300-227/2, 300-384/2);
 	ctx.lineTo(currentRoverStatus.debug.steeringRadius/2+300, currentRoverStatus.debug.steeringY/2+300);
 	ctx.stroke();
 	ctx.beginPath();
-	ctx.moveTo(300+214/2, 300+384/2);
+	ctx.moveTo(300+227/2, 300+384/2);
 	ctx.lineTo(currentRoverStatus.debug.steeringRadius/2+300, currentRoverStatus.debug.steeringY/2+300);
 	ctx.stroke();
 	ctx.beginPath();
-	ctx.moveTo(300-214/2, 300+384/2);
+	ctx.moveTo(300-227/2, 300+384/2);
 	ctx.lineTo(currentRoverStatus.debug.steeringRadius/2+300, currentRoverStatus.debug.steeringY/2+300);
 	ctx.stroke();
 }

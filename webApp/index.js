@@ -13,7 +13,7 @@ const express = require('express')
 const app = express()
 const httpServer = require("http").createServer(app);
 const socketIO = require("socket.io")
-//const {SerialPort, ReadlineParser} = require('serialport')
+const {SerialPort, ReadlineParser} = require('serialport')
 
 let joystick = 
 {
@@ -104,14 +104,14 @@ io.on("connection", (socket) =>
 		//roverX is distance from center to outer wheels in X axis
 		//roverY is distance from center to outer wheels in Y axis
 		//(we assume here that the Y and Z axes are swapped)
-		let roverX = 214;
+		let roverX = 227;
 		let roverY = 384;
 	
 		if(!inRange(joystick.right.x, -1, 1))
 		{
 			let steeringRadius = 21400 / joystick.right.x;
 			let steeringY = joystick.right.y * 8;
-			console.log(steeringY);
+			//console.log(steeringY);
 			roverSteeringCalculated.left.front = (Math.atan((steeringY+roverY) / (steeringRadius + roverX)) * 180) / Math.PI;
 			roverSteeringCalculated.left.back = (Math.atan((steeringY-roverY) / (steeringRadius + roverX)) * 180) / Math.PI;
 			roverSteeringCalculated.right.front = (Math.atan((steeringY+roverY) / (steeringRadius - roverX)) * 180) / Math.PI;
@@ -133,24 +133,28 @@ io.on("connection", (socket) =>
 			roverMotionData.debug.steeringY = steeringY;
 		}
 		else
-		{
-			
+		{			
 			roverMotionData.left.frontServo = joystick.right.x + 90;
 			roverMotionData.left.backServo = -joystick.right.x + 90;
 			roverMotionData.right.frontServo = joystick.right.x + 90;
 			roverMotionData.right.backServo = -joystick.right.x + 90;
+
+			roverMotionData.left.frontServo = clamp(roverMotionData.left.frontServo, 0, 180);
+			roverMotionData.left.backServo = clamp(roverMotionData.left.backServo, 0, 180);
+			roverMotionData.right.frontServo = clamp(roverMotionData.right.frontServo, 0, 180);
+			roverMotionData.right.backServo = clamp(roverMotionData.right.backServo, 0, 180);
 
 //			roverMotionData.debug.steeringY = steeringY;
 
 		}
 		let roverMotionDataJson = JSON.stringify(roverMotionData);
 		socket.emit("roverStatus", roverMotionData);
-		//port.write(roverMotionDataJson + "\n");
+		port.write(roverMotionDataJson + "\n");
 	}, 40);
 });
 
 
-/*
+
 
 const port = new SerialPort({
 	path: '/dev/ttyUSB0',
@@ -160,7 +164,7 @@ const port = new SerialPort({
 const parser = new ReadlineParser();
 port.pipe(parser);
 parser.on('data', console.log);
-*/
+
 console.log("Server started");
 
 function inRange(x, min, max)
@@ -168,4 +172,7 @@ function inRange(x, min, max)
 	return x >= min && x <= max;
 }
 
-
+function clamp(number, min, max)
+{
+        return Math.max(min, Math.min(number, max));
+}
