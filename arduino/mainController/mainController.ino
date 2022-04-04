@@ -40,6 +40,12 @@ void setup()
 void loop()
 {
   String receivedLine = readLine();
+  if(receivedLine.equals(String("timeout")))
+  {
+    onTimeout();
+    return; //void loop() isn't true loop and we can't use continue;
+  }
+  	
   DeserializationError error = deserializeJson(jsonData, receivedLine);
   if(error)
   {
@@ -96,11 +102,15 @@ bool checkIfTimeout()
 
 String readLine()
 {
+  updateTimeout();
   String line;
   char c = 0;
   while(c != '\n')
   {  
-    while(!Serial.available()){}
+    while(!Serial.available() && !checkIfTimeout()){}
+    if(!Serial.available())
+    	return "timeout";
+    updateTimeout();
     c = Serial.read();
     line += c;
   }
