@@ -8,6 +8,9 @@ Servo servoRR;
 
 StaticJsonDocument<512> jsonData;
 
+const int timeout = 500; //500 ms
+long long lastDataTime = 0; //time (in millis) when last data packet was received
+
 void setup()
 {
   Serial.begin(115200);
@@ -32,7 +35,7 @@ void setup()
   servoRL.write(86); // -4
   servoRR.write(95); //-5
 }
- 
+
 
 void loop()
 {
@@ -66,6 +69,30 @@ void loop()
   }
 
 }
+
+void onTimeout()
+{
+  servoFL.write(90 - 7);
+  servoRL.write(90 - 4);
+  servoFR.write(90 - 2);
+  servoRR.write(90 + 5);
+
+  analogWrite(2, 0); 
+  analogWrite(3, 0);
+  analogWrite(4, 0);
+  analogWrite(5, 0);
+}
+
+void updateTimeout()
+{
+  lastDataTime = millis();
+}
+
+bool checkIfTimeout()
+{
+  return millis() - lastDataTime > timeout;
+}
+
 
 String readLine()
 {
