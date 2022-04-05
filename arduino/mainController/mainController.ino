@@ -1,15 +1,25 @@
 #include <ArduinoJson.h>
 #include <Servo.h>
 
+#define READLINE_TIMEOUT 0
+#define DATARECEIVED_TIMEOUT 1
+#define TIMEOUTERROR_READLINE "timeout: readline()"
+#define TIMEOUTERROR_DATARECEIVING "timeout: no motion data"
+
+const int timeouts[] = {2000, 50}; //500 ms
+long long lastUpdates[] = {0, 0}; //time (in millis) when last data packet was received
+
+const uint8_t correctionFL = -7; //angle corrections for servo
+const uint8_t correctionFR = -2; //angle decreases - wheel turns left
+const uint8_t correctionRL = -4;
+const uint8_t correctionRR = 5;
+
 Servo servoFL;
 Servo servoFR;
 Servo servoRL;
 Servo servoRR;
 
 StaticJsonDocument<512> jsonData;
-
-const int timeout = 500; //500 ms
-long long lastDataTime = 0; //time (in millis) when last data packet was received
 
 void setup()
 {
@@ -29,22 +39,23 @@ void setup()
   servoFR.attach(8);
   servoRR.attach(9);
 
-  //angle decreases - wheel turns left
-  servoFL.write(83); //-7
-  servoFR.write(88); // -2
-  servoRL.write(86); // -4
-  servoRR.write(95); //-5
+  servoFL.write(90 + correctionFL); //there is no protection against setting too small or too big
+  servoFR.write(90 + correctionFR); //angle so you need to limit the angles on the Raspberry Pi
+  servoRL.write(90 + correctionRL);
+  servoRR.write(90 + correctionRR);
+  
+  updateTimeout(TIMEOUTERROR_DATARECEIVING);
 }
 
 
-void loop()
+void loop() //TODO convert to non-blocking loop
 {
+  if(checkIfTimeout(DATARECEIVED_TIMEOUT))
+    onTimeout(DATARECEIVED_TIMEOUT);
+
   String receivedLine = readLine();
-  if(receivedLine.equals(String("timeout")))
-  {
-    onTimeout();
+  if(receivedLine.indexOf(String("timeout")) == 0) //if "timeout" is on 0 position then continue
     return; //void loop() isn't true loop and we can't use continue;
-  }
   	
   DeserializationError error = deserializeJson(jsonData, receivedLine);
   if(error)
@@ -56,11 +67,12 @@ void loop()
 
   String jsonType = jsonData["type"];
   if(jsonType.equals("motionData"))
-  {    
-    servoFL.write((int) jsonData["left"]["frontServo"] - 7);
-    servoRL.write((int) jsonData["left"]["backServo"] - 4);
-    servoFR.write((int) jsonData["right"]["frontServo"] - 2);
-    servoRR.write((int) jsonData["right"]["backServo"] + 5);
+  {
+    updateTimeout(DATARECEIVED_TIMEOUT);
+    servoFL.write((int) jsonData["left"]["frontServo"] + correctionFL);
+    servoRL.write((int) jsonData["left"]["backServo"] + correctionRL);
+    servoFR.write((int) jsonData["right"]["frontServo"] + correctionFR);
+    servoRR.write((int) jsonData["right"]["backServo"] + correctionRR);
 
     //conditions always return 1 or 0 so we don't need to put "if" instruction
     digitalWrite(22, jsonData["left"]["backPower"] > 0);
@@ -73,44 +85,60 @@ void loop()
     analogWrite(4, abs((int) jsonData["right"]["backPower"]));
     analogWrite(5, abs((int) jsonData["right"]["frontPower"]));
   }
-
 }
 
-void onTimeout()
+void onTimeout(int timeoutVariant)
 {
-  servoFL.write(90 - 7);
-  servoRL.write(90 - 4);
-  servoFR.write(90 - 2);
-  servoRR.write(90 + 5);
+  servoFL.write(90 + correctionFL);
+  servoRL.write(90 + correctionRL);
+  servoFR.write(90 + correctionFR);
+  servoRR.write(90 + correctionRR);
 
   analogWrite(2, 0); 
   analogWrite(3, 0);
   analogWrite(4, 0);
   analogWrite(5, 0);
+
+  switch(timeoutVariant)
+  {
+    case READLINE_TIMEOUT:
+      Serial.println(TIMEOUTERROR_READLINE);
+      break;
+
+    case DATARECEIVED_TIMEOUT:
+      Serial.println(TIMEOUTERROR_DATARECEIVING);
+      break;
+
+    default:
+      Serial.println("timeout: unknown");
+      break;
+  }
 }
 
-void updateTimeout()
+void updateTimeout(int timeoutVariant)
 {
-  lastDataTime = millis();
+  lastUpdates[timeoutVariant] = millis();
 }
 
-bool checkIfTimeout()
+bool checkIfTimeout(int timeoutVariant)
 {
-  return millis() - lastDataTime > timeout;
+  return millis() - lastUpdates[timeoutVariant] > timeouts[timeoutVariant];
 }
-
 
 String readLine()
 {
-  updateTimeout();
+  updateTimeout(READLINE_TIMEOUT);
   String line;
   char c = 0;
   while(c != '\n')
   {  
-    while(!Serial.available() && !checkIfTimeout()){}
+    while(!Serial.available() && !checkIfTimeout(READLINE_TIMEOUT)){}
     if(!Serial.available())
-    	return "timeout";
-    updateTimeout();
+    {
+      onTimeout(READLINE_TIMEOUT);
+      return TIMEOUTERROR_READLINE;
+    }
+    updateTimeout(READLINE_TIMEOUT);
     c = Serial.read();
     line += c;
   }
