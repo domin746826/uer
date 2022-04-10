@@ -1,5 +1,4 @@
-/*const raspi = require('raspi');
-const gpio = require('raspi-gpio');
+/*const raspi = require('raspi'); const gpio = require('raspi-gpio');
 
 raspi.init(() => {
   const input = new gpio.DigitalInput('P1-3');
@@ -14,6 +13,7 @@ const app = express()
 const httpServer = require("http").createServer(app);
 const socketIO = require("socket.io")
 const {SerialPort, ReadlineParser} = require('serialport')
+const { spawn } = require("child_process");
 
 let joystick = 
 {
@@ -180,7 +180,7 @@ io.on("connection", (socket) =>
 		let roverMotionDataJson = JSON.stringify(roverMotionData);
 		socket.emit("roverStatus", roverMotionData);
 		port.write(roverMotionDataJson + "\n");
-	}, 40);
+	}, 60);
 });
 
 
@@ -196,6 +196,25 @@ port.pipe(parser);
 parser.on('data', console.log);
 
 console.log("Server started");
+
+/*
+const ls = spawn("/usr/bin/sh", ["start.sh"]);
+ls.stdout.on("data", data =>
+{
+	console.log(`stdout: ${data}`);
+});
+ls.stderr.on("data", data =>
+{
+	console.log(`stderr: ${data}`);
+});
+ls.on('error', (error) =>
+{
+	console.log(`error: ${error.message}`);
+});
+ls.on("close", code =>
+{
+	console.log(`child process exited with code ${code}`);
+});*/
 
 function inRange(x, min, max)
 {

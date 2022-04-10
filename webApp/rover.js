@@ -1,7 +1,7 @@
 window.setInterval(() =>
 {
 	socket.emit("joystick", filteredJoystick);
-}, 40);
+}, 60);
 
 
 function onRoverStatus(arg)
@@ -79,10 +79,10 @@ function initRover()
 	//smoothing joystick moves
 	let joystickSmooth = setInterval(() =>
 	{
-		filteredJoystick.left.x += clamp(rawJoystick.left.x - filteredJoystick.left.x, -4, 4);
-	       	filteredJoystick.left.y += clamp(rawJoystick.left.y - filteredJoystick.left.y, -4, 4);
-       		filteredJoystick.right.x += clamp(rawJoystick.right.x - filteredJoystick.right.x, -2, 2);
-	       	filteredJoystick.right.y += clamp(rawJoystick.right.y - filteredJoystick.right.y, -2, 2);
+		filteredJoystick.left.x += clamp(rawJoystick.left.x - filteredJoystick.left.x, -8, 8);
+	       	filteredJoystick.left.y += clamp(rawJoystick.left.y - filteredJoystick.left.y, -8, 8);
+       		filteredJoystick.right.x += clamp(rawJoystick.right.x - filteredJoystick.right.x, -4, 4);
+	       	filteredJoystick.right.y += clamp(rawJoystick.right.y - filteredJoystick.right.y, -4, 4);
 	}, 25);
 }
 
