@@ -26,6 +26,18 @@ let filteredJoystick =
 	}
 };
 
+let dpad = 
+{
+	horizontal: 0,
+	vertical: 0
+};
+
+let filteredDpad =
+{
+	horizontal: 0,
+	vertical: 0
+};
+
 window.addEventListener('gc.controller.found', function(event)
 {
 	var controller = event.detail.controller;
@@ -51,6 +63,18 @@ window.addEventListener('gc.button.press', (event) =>
 			//
 			rawJoystick.right.x = Math.floor(event.detail.value*200-100);
 			break;
+		case 'DPAD_LEFT':
+			dpad.horizontal = -1;
+			break;
+		case 'DPAD_RIGHT':
+			dpad_horizontal = 1;
+			break;
+		case 'DPAD_UP':
+			dpad_vertical = 1;
+			break;
+		case 'DPAD_DOWN':
+			dpad_vertical = -1;
+			break;
 	}
 }, false);
 
@@ -61,6 +85,18 @@ window.addEventListener('gc.button.hold', (event) =>
 		case 'LEFT_SHOULDER_BOTTOM':
 //			console.log(event.detail.value);
 			rawJoystick.right.x = Math.floor(event.detail.value*200-100);
+			break;
+		case 'DPAD_LEFT':
+			dpad.horizontal = -1;
+			break;
+		case 'DPAD_RIGHT':
+			dpad_horizontal = 1;
+			break;
+		case 'DPAD_UP':
+			dpad_vertical = 1;
+			break;
+		case 'DPAD_DOWN':
+			dpad_vertical = -1;
 			break;
 	}
 }, false);
@@ -73,6 +109,15 @@ window.addEventListener('gc.button.release', (event) =>
 		case 'LEFT_SHOULDER_BOTTOM':
 //			console.log(event.detail.value);
 			rawJoystick.right.x = Math.floor(event.detail.value*200-100);
+			break;
+		
+		case 'DPAD_LEFT':
+		case 'DPAD_RIGHT':
+			dpad_horizontal = 0;
+			break;
+		case 'DPAD_UP':
+		case 'DPAD_DOWN':
+			dpad_vertical = 0;
 			break;
 	}
 }, false);

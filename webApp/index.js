@@ -70,6 +70,13 @@ let roverMotionData =
 	}
 };
 
+let cameraMotionData = 
+{
+	type: "cameraMotionData",
+	hAngle: 90,
+	vAngle: 90
+};
+
 const options = {};
 io = socketIO(httpServer,options);
 httpServer.listen(80);
@@ -96,6 +103,19 @@ io.on("connection", (socket) =>
 	{
 		joystick = arg;
 	});
+
+	socket.on("dpad", (arg) =>
+	{
+		cameraMotionData.hAngle = arg.horizontal + 90;
+		cameraMotionData.vAngle = arg.vertical + 90;
+	});
+
+	let cameraData = setInterval(() =>
+	{	
+		let cameraMotionDataJson = JSON.stringify(cameraMotionData);
+		socket.emit("cameraMotionData", cameraMotionData);
+		port.write(cameraDataJson + "\n");
+	}, 50);
 
 
 	let roverLoop = setInterval(()=>
@@ -181,6 +201,8 @@ io.on("connection", (socket) =>
 		socket.emit("roverStatus", roverMotionData);
 		port.write(roverMotionDataJson + "\n");
 	}, 40);
+
+
 });
 
 
