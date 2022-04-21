@@ -7,4 +7,5 @@ You need node.js, npm, socketio, serialport and express to get it running
 ![alt text](https://github.com/domin746826/uer/blob/main/media/picture1.jpg?raw=true)
 ![alt text](https://github.com/domin746826/uer/blob/main/media/picture2.jpg?raw=true)
 ![caption](https://github.com/domin746826/uer/blob/main/media/video1.gif?raw=true)
+<br>
 Authors: Dominik Sitarski, Rafał Sawczyszyn
