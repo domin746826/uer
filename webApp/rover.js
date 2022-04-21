@@ -15,6 +15,11 @@ window.setInterval(() =>
 	displayFps(Math.round(fps));
 }, 200);
 
+window.setInterval() =>
+{
+	socket.emit("dpad", filteredDpad);
+}, 50);
+
 function redrawJoystick(joystickCanvas, x, y)
 {
 	let angle = Math.atan2(y, x);
@@ -84,6 +89,12 @@ function initRover()
        		filteredJoystick.right.x += clamp(rawJoystick.right.x - filteredJoystick.right.x, -4, 4);
 	       	filteredJoystick.right.y += clamp(rawJoystick.right.y - filteredJoystick.right.y, -4, 4);
 	}, 25);
+
+	let cameraSmooth = setInterval(() => 
+	{
+		filteredDpad.horizontal = clamp(filteredDpad.horizontal + dpad.horizontal, -90, 90);
+		filteredDpad.vertical = clamp(filteredDpad.vertical + dpad.vertical, -90, 90);
+	}, 50);
 }
 
 function gameLoop()

@@ -6,18 +6,26 @@
 #define TIMEOUTERROR_READLINE "timeout: readline()"
 #define TIMEOUTERROR_DATARECEIVING "timeout: no motion data"
 
-const int timeouts[] = {2000, 50}; //500 ms
+const int timeouts[] = {500, 50}; //500 ms
 long long lastUpdates[] = {0, 0}; //time (in millis) when last data packet was received
 
-const uint8_t correctionFL = -7; //angle corrections for servo
+/*const uint8_t correctionFL = -7; //angle corrections for servo
 const uint8_t correctionFR = -2; //angle decreases - wheel turns left
 const uint8_t correctionRL = -4;
-const uint8_t correctionRR = 5;
+const uint8_t correctionRR = 5;*/
+
+const int8_t correctionFL = 1; //angle corrections for servo
+const int8_t correctionFR = -6; //angle decreases - wheel turns left
+const int8_t correctionRL = -2;
+const int8_t correctionRR = 2;
 
 Servo servoFL;
 Servo servoFR;
 Servo servoRL;
 Servo servoRR;
+
+Servo servoCameraHorizontal;
+Servo servoCameraVertical;
 
 StaticJsonDocument<512> jsonData;
 
@@ -38,11 +46,16 @@ void setup()
   servoRL.attach(7);
   servoFR.attach(8);
   servoRR.attach(9);
+  servoCameraHorizontal.attach(10);
+  servoCameraVertical.attach(11);
 
   servoFL.write(90 + correctionFL); //there is no protection against setting too small or too big
   servoFR.write(90 + correctionFR); //angle so you need to limit the angles on the Raspberry Pi
   servoRL.write(90 + correctionRL);
   servoRR.write(90 + correctionRR);
+
+  servoCameraHorizontal.write(90);
+  servoCameraVertical.write(90);
   
   updateTimeout(TIMEOUTERROR_DATARECEIVING);
 }
@@ -85,11 +98,26 @@ void loop() //TODO convert to non-blocking loop
     analogWrite(4, abs((int) jsonData["right"]["backPower"]));
     analogWrite(5, abs((int) jsonData["right"]["frontPower"]));
   }
+  else if(jsonType.equals("cameraMotionData"))
+  {
+    servoCameraHorizontal.write((int) jsonData["hAngle"]);
+    servoCameraVertical.write((int) jsonData["vAngle"]);
+  }
+
 }
 
 void onTimeout(int timeoutVariant)
 {
-  servoFL.write(90 + correctionFL);
+  
+
+  switch(timeoutVariant)
+  {
+    case READLINE_TIMEOUT:    
+      Serial.println(TIMEOUTERROR_READLINE);
+      break;
+
+    case DATARECEIVED_TIMEOUT:
+    servoFL.write(90 + correctionFL);
   servoRL.write(90 + correctionRL);
   servoFR.write(90 + correctionFR);
   servoRR.write(90 + correctionRR);
@@ -98,14 +126,6 @@ void onTimeout(int timeoutVariant)
   analogWrite(3, 0);
   analogWrite(4, 0);
   analogWrite(5, 0);
-
-  switch(timeoutVariant)
-  {
-    case READLINE_TIMEOUT:
-      Serial.println(TIMEOUTERROR_READLINE);
-      break;
-
-    case DATARECEIVED_TIMEOUT:
       Serial.println(TIMEOUTERROR_DATARECEIVING);
       break;
 
