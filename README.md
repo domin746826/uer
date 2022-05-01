@@ -1,5 +1,5 @@
 # UER
-**Our rover has an accreditation to the national finals of Gdynia Explory Week**<br>
+**Our rover won an accreditation to the national finals of Gdynia Explory Week**<br>
 https://m.facebook.com/Explory/
 
 Universal Exploring Rover base controller code<br>
