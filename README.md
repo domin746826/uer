@@ -7,7 +7,7 @@ Dear student, you're now on our education repository.
 To start learning click on code folders and read, analyze the code.
 If you want to design and try to build your own rover, go to our simulation down here
 and try on your 3D parts. 
-
+**We are still improving parts for our rover, especially a robotic arm. If you want to print UER rover message me to get all the parts. rafalsawczyszyn@gmail.com
 
 Universal Exploring Rover base controller code<br>
 If you are looking for the simulation, it is available here https://domintech.ddns.net/js/projects/uer/ <br>
