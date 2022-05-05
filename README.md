@@ -4,7 +4,7 @@
 **Our rover won an accreditation to the national finals of Gdynia Explory Week!**<br>
 https://m.facebook.com/Explory/
 
-Hi there!
+**Hi there!** <br>
 Dear student, you're now on our education repository.
 To start learning click on code folders and read, analyze the code.
 If you want to design and try to build your own rover, go to our simulation down here
