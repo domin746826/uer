@@ -70,6 +70,18 @@ window.addEventListener('gc.button.press', (event) =>
 		case 'DPAD_DOWN':
 			dpad_vertical = -1;
 			break;
+		case 'DPAD_LEFT':
+			dpad.horizontal = -1;
+			break;
+		case 'DPAD_RIGHT':
+			dpad_horizontal = 1;
+			break;
+		case 'DPAD_UP':
+			dpad_vertical = 1;
+			break;
+		case 'DPAD_DOWN':
+			dpad_vertical = -1;
+			break;
 	}
 }, false);
 
@@ -77,6 +89,18 @@ window.addEventListener('gc.button.hold', (event) =>
 {
 	switch(event.detail.name)
 	{
+		case 'DPAD_LEFT':
+			dpad.horizontal = -1;
+			break;
+		case 'DPAD_RIGHT':
+			dpad_horizontal = 1;
+			break;
+		case 'DPAD_UP':
+			dpad_vertical = 1;
+			break;
+		case 'DPAD_DOWN':
+			dpad_vertical = -1;
+			break;
 		case 'DPAD_LEFT':
 			dpad.horizontal = -1;
 			break;
@@ -97,6 +121,15 @@ window.addEventListener('gc.button.release', (event) =>
 {
 	switch(event.detail.name)
 	{
+		case 'DPAD_LEFT':
+		case 'DPAD_RIGHT':
+			dpad_horizontal = 0;
+			break;
+		case 'DPAD_UP':
+		case 'DPAD_DOWN':
+			dpad_vertical = 0;
+			break;
+		
 		case 'DPAD_LEFT':
 		case 'DPAD_RIGHT':
 			dpad_horizontal = 0;

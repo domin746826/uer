@@ -68,12 +68,16 @@ let roverMotionData =
 	}
 };
 /*
+=======
+
+>>>>>>> c5553cd72f31007af6936171f69a85234e07a3a5
 let cameraMotionData = 
 {
 	type: "cameraMotionData",
 	hAngle: 90,
 	vAngle: 90
 };
+<<<<<<< HEAD
 */
 const options = {};
 io = socketIO(httpServer,options);
@@ -109,6 +113,7 @@ io.on("connection", (socket) =>
 	});
 */
 	/*let cameraData = setInterval(() =>
+
 	{	
 		let cameraMotionDataJson = JSON.stringify(cameraMotionData);
 		socket.emit("cameraMotionData", cameraMotionData);

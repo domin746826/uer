@@ -14,8 +14,8 @@ const uint8_t correctionFR = -2; //angle decreases - wheel turns left
 const uint8_t correctionRL = -4;
 const uint8_t correctionRR = 5;*/
 
-const int8_t correctionFL = -3; //angle corrections for servo
-const int8_t correctionFR = -3; //angle decreases - wheel turns left
+const int8_t correctionFL = 1; //angle corrections for servo
+const int8_t correctionFR = -6; //angle decreases - wheel turns left
 const int8_t correctionRL = -2;
 const int8_t correctionRR = 2;
 
