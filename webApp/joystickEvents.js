@@ -26,6 +26,18 @@ let filteredJoystick =
 	}
 };
 
+let dpad = 
+{
+	horizontal: 0,
+	vertical: 0
+};
+
+let filteredDpad =
+{
+	horizontal: 0,
+	vertical: 0
+};
+
 window.addEventListener('gc.controller.found', function(event)
 {
 	var controller = event.detail.controller;
@@ -46,10 +58,17 @@ window.addEventListener('gc.button.press', (event) =>
 			console.log("started");
 			break;
 
-		case 'LEFT_SHOULDER_BOTTOM':
-			//console.log(event);
-			//
-			rawJoystick.right.x = Math.floor(event.detail.value*200-100);
+		case 'DPAD_LEFT':
+			dpad.horizontal = -1;
+			break;
+		case 'DPAD_RIGHT':
+			dpad_horizontal = 1;
+			break;
+		case 'DPAD_UP':
+			dpad_vertical = 1;
+			break;
+		case 'DPAD_DOWN':
+			dpad_vertical = -1;
 			break;
 	}
 }, false);
@@ -58,9 +77,17 @@ window.addEventListener('gc.button.hold', (event) =>
 {
 	switch(event.detail.name)
 	{
-		case 'LEFT_SHOULDER_BOTTOM':
-//			console.log(event.detail.value);
-			rawJoystick.right.x = Math.floor(event.detail.value*200-100);
+		case 'DPAD_LEFT':
+			dpad.horizontal = -1;
+			break;
+		case 'DPAD_RIGHT':
+			dpad_horizontal = 1;
+			break;
+		case 'DPAD_UP':
+			dpad_vertical = 1;
+			break;
+		case 'DPAD_DOWN':
+			dpad_vertical = -1;
 			break;
 	}
 }, false);
@@ -70,9 +97,13 @@ window.addEventListener('gc.button.release', (event) =>
 {
 	switch(event.detail.name)
 	{
-		case 'LEFT_SHOULDER_BOTTOM':
-//			console.log(event.detail.value);
-			rawJoystick.right.x = Math.floor(event.detail.value*200-100);
+		case 'DPAD_LEFT':
+		case 'DPAD_RIGHT':
+			dpad_horizontal = 0;
+			break;
+		case 'DPAD_UP':
+		case 'DPAD_DOWN':
+			dpad_vertical = 0;
 			break;
 	}
 }, false);
@@ -86,16 +117,18 @@ function onJoystickChange(event)
 		{
 			rawJoystick.left.x = Math.floor(event.detail.position.x*100);
 			rawJoystick.left.y = -Math.floor(event.detail.position.y*100);
+      rawJoystick.left.y = (rawJoystick.left.y * rawJoystick.left.y * rawJoystick.left.y) / 10000;
+
 		}
 		break;
 
 		case 'RIGHT_ANALOG_STICK':
 		{
-			rawJoystick.right.y = -Math.floor(event.detail.position.x*100);
-			//rawJoystick.right.x = -Math.floor(event.detail.position.y*100);
+			rawJoystick.right.y = -Math.floor(event.detail.position.y*100);
+			rawJoystick.right.x = Math.floor(event.detail.position.x*100);
+      rawJoystick.right.x = (rawJoystick.right.x * rawJoystick.right.x * rawJoystick.right.x) / 10000;
 			console.log(rawJoystick.right.x + " " + rawJoystick.right.y);
 		}
 		break;
 	}
 }
-

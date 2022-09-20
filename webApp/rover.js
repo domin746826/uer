@@ -1,7 +1,7 @@
 window.setInterval(() =>
 {
 	socket.emit("joystick", filteredJoystick);
-}, 60);
+}, 40);
 
 
 function onRoverStatus(arg)
@@ -15,21 +15,27 @@ window.setInterval(() =>
 	displayFps(Math.round(fps));
 }, 200);
 
+window.setInterval(() =>
+{
+	socket.emit("dpad", filteredDpad);
+}, 100);
+
 function redrawJoystick(joystickCanvas, x, y)
 {
-	let angle = Math.atan2(y, x);
-	let magnitude = Math.sqrt(x*x + y*y);
+	//let angle = Math.atan2(y, x);
+	//let magnitude = Math.sqrt(x*x + y*y);
 
-	if(magnitude > 100) magnitude = 100;
+	//if(magnitude > 100) magnitude = 100;
 
-	xInCircle = magnitude * Math.cos( angle );
-	yInCircle = magnitude * Math.sin( angle );
+	//xInCircle = magnitude * Math.cos( angle );
+	//yInCircle = magnitude * Math.sin( angle );
 
 	let ctx = joystickCanvas.getContext("2d");
 
 	ctx.clearRect(0, 0, joystickCanvas.width, joystickCanvas.height);
 	ctx.beginPath();
-	ctx.arc(50+xInCircle/2, 50-yInCircle/2, 20, 0, 2 * Math.PI); //draw filled circle on position
+	//ctx.arc(50+xInCircle/2, 50-yInCircle/2, 20, 0, 2 * Math.PI); //draw filled circle on position
+	ctx.arc(50+x/2, 50-y/2, 20, 0, 2 * Math.PI); //draw filled circle on position
 	ctx.stroke();
 	ctx.fillStyle = 'gray';
 	ctx.fill();
@@ -79,11 +85,20 @@ function initRover()
 	//smoothing joystick moves
 	let joystickSmooth = setInterval(() =>
 	{
-		filteredJoystick.left.x += clamp(rawJoystick.left.x - filteredJoystick.left.x, -8, 8);
-	       	filteredJoystick.left.y += clamp(rawJoystick.left.y - filteredJoystick.left.y, -8, 8);
-       		filteredJoystick.right.x += clamp(rawJoystick.right.x - filteredJoystick.right.x, -4, 4);
-	       	filteredJoystick.right.y += clamp(rawJoystick.right.y - filteredJoystick.right.y, -4, 4);
+		filteredJoystick.left.x += clamp(rawJoystick.left.x - filteredJoystick.left.x, -16, 16);
+	       	filteredJoystick.left.y += clamp(rawJoystick.left.y - filteredJoystick.left.y, -16, 16);
+       		filteredJoystick.right.x += clamp(rawJoystick.right.x - filteredJoystick.right.x, -8, 8);
+	       	filteredJoystick.right.y += clamp(rawJoystick.right.y - filteredJoystick.right.y, -8, 8);
 	}, 25);
+
+	let cameraSmooth = setInterval(() => 
+	{
+		filteredDpad.horizontal += dpad.horizontal*2;
+		filteredDpad.vertical += dpad.vertical*2;
+		filteredDpad.horizontal = clamp(filteredDpad.horizontal, -90, 90);
+		filteredDpad.vertical = clamp(filteredDpad.vertical, -90, 90);
+	}, 50);
+
 }
 
 function gameLoop()

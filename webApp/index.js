@@ -1,10 +1,8 @@
 /*const raspi = require('raspi'); const gpio = require('raspi-gpio');
-
 raspi.init(() => {
   const input = new gpio.DigitalInput('P1-3');
   const output = new gpio.DigitalOutput('P1-5');
   output.write(input.read());
-
 });*/
 
 //var raspividStream = require('raspivid-stream');
@@ -69,7 +67,14 @@ let roverMotionData =
 		steeringY: 0
 	}
 };
-
+/*
+let cameraMotionData = 
+{
+	type: "cameraMotionData",
+	hAngle: 90,
+	vAngle: 90
+};
+*/
 const options = {};
 io = socketIO(httpServer,options);
 httpServer.listen(80);
@@ -97,6 +102,19 @@ io.on("connection", (socket) =>
 		joystick = arg;
 	});
 
+	/*socket.on("dpad", (arg) =>
+	{
+		cameraMotionData.hAngle = arg.horizontal + 90;
+		cameraMotionData.vAngle = arg.vertical + 90;
+	});
+*/
+	/*let cameraData = setInterval(() =>
+	{	
+		let cameraMotionDataJson = JSON.stringify(cameraMotionData);
+		socket.emit("cameraMotionData", cameraMotionData);
+		port.write(cameraDataJson + "\n");
+	}, 50);*/
+
 
 	let roverLoop = setInterval(()=>
 	{	
@@ -113,7 +131,7 @@ io.on("connection", (socket) =>
 		if(!inRange(joystick.right.x, -1, 1))
 		{
 			steeringRadius = 30000 / joystick.right.x;
-			steeringY = joystick.right.y * 2;
+			steeringY = joystick.right.y * 3.8;
 			//console.log(steeringY);
 			roverSteeringCalculated.left.front = (Math.atan((steeringY+roverY) / (steeringRadius + roverX)) * 180) / Math.PI;
 			roverSteeringCalculated.left.back = (Math.atan((steeringY-roverY) / (steeringRadius + roverX)) * 180) / Math.PI;
@@ -121,7 +139,6 @@ io.on("connection", (socket) =>
 			roverSteeringCalculated.right.back = (Math.atan((steeringY-roverY) / (steeringRadius - roverX)) * 180) / Math.PI;
 			/*let angleLeft = (Math.atan(roverY / (steeringRadius + roverX)) * 180) / Math.PI;
 			let angleRight = (Math.atan(roverY / (steeringRadius - roverX)) * 180) / Math.PI;
-
 			roverMotionData.left.frontServo = angleLeft + 90;
 			roverMotionData.left.backServo = -angleLeft + 90;
 			roverMotionData.right.frontServo = angleRight + 90;
@@ -148,10 +165,13 @@ io.on("connection", (socket) =>
 			let powerRB = Math.floor(Math.sqrt(Math.pow(steeringY-roverY, 2) + Math.pow(steeringRadius-roverX, 2))/radiusDistance)/100;
 			let powerRF = Math.floor(Math.sqrt(Math.pow(steeringY+roverY, 2) + Math.pow(steeringRadius-roverX, 2))/radiusDistance)/100;
 
-			roverMotionData.left.frontPower = powerLF*(joystick.left.y/2);
-			roverMotionData.left.backPower = powerLB*(joystick.left.y/2);
-			roverMotionData.right.frontPower = powerRF*(joystick.left.y/2);
-			roverMotionData.right.backPower = powerRB*(joystick.left.y/2);
+      let powerJoystick = joystick.left.y;
+      if(radiusDistance < 5 && joystick.right.x != 0)
+        powerJoystick = (powerJoystick*radiusDistance) / 6;
+			roverMotionData.left.frontPower = powerLF*(powerJoystick/2);
+			roverMotionData.left.backPower = powerLB*(powerJoystick/2);
+			roverMotionData.right.frontPower = powerRF*(powerJoystick/2);
+			roverMotionData.right.backPower = powerRB*(powerJoystick/2);
 		}
 		else
 		{			
@@ -180,10 +200,10 @@ io.on("connection", (socket) =>
 		let roverMotionDataJson = JSON.stringify(roverMotionData);
 		socket.emit("roverStatus", roverMotionData);
 		port.write(roverMotionDataJson + "\n");
-	}, 60);
+	}, 40);
+
+
 });
-
-
 
 
 const port = new SerialPort({

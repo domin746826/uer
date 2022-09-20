@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>drone</title>
+        <script type="text/javascript" src="https://rawgit.com/131/h264-live-player/master/vendor/dist/http-live-player.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/dist/jmuxer.js"></script>
+        <script src="/dist/Controller.min.js"></script>
+	<script src="/rover.js"></script>
+	<script src="/joystickEvents.js"></script>
+        <style>
+        video
+        {
+            width: 200px;
+            height: 900px;
+        }
+
+
+        body
+        {
+            background-color: #111113;
+        }
+
+        .all
+        {
+            display: inline-block;
+		overflow: hidden;
+            background-color: #1c1c1e;
+            font-family: sans-serif;
+            font-size: 30px;
+            color:  white;
+            padding: 14px;
+            width:auto;
+            height: auto;
+            float: left;
+
+            margin: 20px;
+
+        }
+
+
+	.telemetry
+	{
+		display: inline;
+		float:left;
+		
+	}
+
+
+
+        .video
+      	{
+            background-color: black;
+            font-family: sans-serif;
+            font-size: 30px;
+            color:  white;
+            padding:  10px;
+            float: left;
+		
+        }
+
+	#joystickLeft
+	{
+		border:5px solid lightgray;
+		border-radius: 50%;
+		background-color: #222224;
+		margin: 20px;
+	}
+
+	#joystickRight
+	{
+		border:5px solid lightgray;
+		border-radius: 50%;
+		background-color: #222224;
+		margin: 20px;
+	}
+
+	#roverVisualisation
+	{
+		border:1px solid lightgray;
+		border-radius: 5%;
+		background-color: #222224;
+		margin: 20px;
+	}
+        </style>
+    </head>
+
+    <body>
+        
+        <div class="all">
+            </div>
+
+		<iframe id="video" width=640 height=480 src="http://192.168.1.46:8080/javascript_simple.html"></iframe>
+		<iframe id="video" width=640 height=480 src="http://192.168.1.46:8080/javascript_simple.html"></iframe>
+	    <!-- <div class="video"><video width="100%" autoplay="true" muted="muted" id="player"></video></div> -->
+
+        </div>
+    
+
+    
+
+<script>
+	const socket = io();
+
+
+    </script> 
+
+    
+    </body>
+</html>
