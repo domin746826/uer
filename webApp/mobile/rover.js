@@ -17,11 +17,10 @@ window.setInterval(() =>
 
 window.setInterval(() =>
 {
-	socket.emit("dpad", optimizedDpad);
-  
-}, 20);
+	socket.emit("dpad", filteredDpad);
+}, 100);
 
-function redrawJoystick(joystickCanvas, x, y)
+/*function redrawJoystick(joystickCanvas, x, y)
 {
 	//let angle = Math.atan2(y, x);
 	//let magnitude = Math.sqrt(x*x + y*y);
@@ -40,7 +39,7 @@ function redrawJoystick(joystickCanvas, x, y)
 	ctx.stroke();
 	ctx.fillStyle = 'gray';
 	ctx.fill();
-}
+}*/
 
 function redrawRoverVisualisation(roverCanvas, roverStatus)
 {
@@ -87,40 +86,18 @@ function initRover()
 	let joystickSmooth = setInterval(() =>
 	{
 		filteredJoystick.left.x += clamp(rawJoystick.left.x - filteredJoystick.left.x, -16, 16);
-	  filteredJoystick.left.y += clamp(rawJoystick.left.y - filteredJoystick.left.y, -16, 16);
-    filteredJoystick.right.x += clamp(rawJoystick.right.x - filteredJoystick.right.x, -8, 8);
-	  filteredJoystick.right.y += clamp(rawJoystick.right.y - filteredJoystick.right.y, -8, 8);
+	       	filteredJoystick.left.y += clamp(rawJoystick.left.y - filteredJoystick.left.y, -16, 16);
+       		filteredJoystick.right.x += clamp(rawJoystick.right.x - filteredJoystick.right.x, -8, 8);
+	       	filteredJoystick.right.y += clamp(rawJoystick.right.y - filteredJoystick.right.y, -8, 8);
 	}, 25);
 
 	let cameraSmooth = setInterval(() => 
 	{
-		//filteredDpad.horizontal += dpad.horizontal*1;
+		filteredDpad.horizontal += dpad.horizontal*2;
 		filteredDpad.vertical += dpad.vertical*2;
-		filteredDpad.vertical = clamp(filteredDpad.vertical, -90, 90);
-   
-    if(dpad.horizontal == 0)
-    {
-      if(dpadHorizVal > 0.1)
-        dpadHorizVal -= 0.1;
-      else if(dpadHorizVal < -0.1)
-        dpadHorizVal += 0.1;
-      else
-        dpadHorizVal = 0;
-    }
-    else
-    {
-      filteredDpad.horizontal += dpadHorizVal;
-      dpadHorizVal += dpad.horizontal*0.05;
-      dpadHorizVal = clamp(dpadHorizVal, -1, 1);
-    }
-
 		filteredDpad.horizontal = clamp(filteredDpad.horizontal, -90, 90);
-    
-    optimizedDpad.vertical = Math.floor(filteredDpad.vertical);
-    optimizedDpad.horizontal = Math.floor(filteredDpad.horizontal);
-
-
-	}, 20);
+		filteredDpad.vertical = clamp(filteredDpad.vertical, -90, 90);
+	}, 50);
 
 }
 
@@ -131,9 +108,6 @@ function gameLoop()
 	const delta = ( time - prevTime ) / 1000;
        	fps = (15*fps + 1/delta)/16;
 
-	redrawJoystick(joystickLeftCanvas, filteredJoystick.left.x, filteredJoystick.left.y);
-	redrawJoystick(joystickRightCanvas, filteredJoystick.right.x, filteredJoystick.right.y);
-	redrawRoverVisualisation(roverVisualisationCanvas, currentRoverStatus);
 
         prevTime = time;
 }

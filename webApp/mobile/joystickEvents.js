@@ -38,16 +38,7 @@ let filteredDpad =
 	vertical: 0
 };
 
-
-let optimizedDpad =
-{
-	horizontal: 0,
-	vertical: 0
-};
-
-let dpadHorizVal = 0;
-
-window.addEventListener('gc.controller.found', function(event)
+/*window.addEventListener('gc.controller.found', function(event)
 {
 	var controller = event.detail.controller;
 	console.log("Controller found at index " + controller.index + ".");
@@ -102,13 +93,25 @@ window.addEventListener('gc.button.hold', (event) =>
 			dpad.horizontal = -1;
 			break;
 		case 'DPAD_RIGHT':
-			dpad.horizontal = 1;
+			dpad_horizontal = 1;
 			break;
 		case 'DPAD_UP':
-			dpad.vertical = 1;
+			dpad_vertical = 1;
 			break;
 		case 'DPAD_DOWN':
-			dpad.vertical = -1;
+			dpad_vertical = -1;
+			break;
+		case 'DPAD_LEFT':
+			dpad.horizontal = -1;
+			break;
+		case 'DPAD_RIGHT':
+			dpad_horizontal = 1;
+			break;
+		case 'DPAD_UP':
+			dpad_vertical = 1;
+			break;
+		case 'DPAD_DOWN':
+			dpad_vertical = -1;
 			break;
 	}
 }, false);
@@ -120,13 +123,20 @@ window.addEventListener('gc.button.release', (event) =>
 	{
 		case 'DPAD_LEFT':
 		case 'DPAD_RIGHT':
-      dpad.horizontal = 0;
-		break;
+			dpad_horizontal = 0;
+			break;
 		case 'DPAD_UP':
 		case 'DPAD_DOWN':
-			dpad.vertical = 0;
+			dpad_vertical = 0;
 			break;
 		
+		case 'DPAD_LEFT':
+		case 'DPAD_RIGHT':
+			dpad_horizontal = 0;
+			break;
+		case 'DPAD_UP':
+		case 'DPAD_DOWN':
+			dpad_vertical = 0;
 			break;
 	}
 }, false);
@@ -154,4 +164,16 @@ function onJoystickChange(event)
 		}
 		break;
 	}
-}
+}*/
+
+window.setInterval(function()
+{
+  rawJoystick.left.x=joyLeft.GetX();
+  rawJoystick.left.y=joyLeft.GetY();//*joyLeft.getY()*joyLeft.getY()/10000;
+  rawJoystick.right.x=joyRight.GetX();//*joyRight.getX()*joyRight.getX()/10000;
+  rawJoystick.right.y=joyRight.GetY();
+}, 50);
+
+
+
+

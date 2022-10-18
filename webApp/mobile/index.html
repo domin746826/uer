@@ -4,10 +4,11 @@
         <title>drone</title>
         <script type="text/javascript" src="https://rawgit.com/131/h264-live-player/master/vendor/dist/http-live-player.js"></script>
         <script src="/socket.io/socket.io.js"></script>
+        <script src="http://bobboteck.github.io/joy/joy.js"></script>
         <script src="/dist/jmuxer.js"></script>
         <script src="/dist/Controller.min.js"></script>
-	<script src="/rover.js"></script>
-	<script src="/joystickEvents.js"></script>
+	<script src="rover.js"></script>
+	<script src="joystickEvents.js"></script>
         <style>
         video
         {
@@ -68,6 +69,20 @@
 		margin: 20px;
 	}
 
+  button
+    {
+background-color: #232328;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  }
+
 	#joystickRight
 	{
 		border:5px solid lightgray;
@@ -89,21 +104,23 @@
     <body>
         
         <div class="all">
+
+    <div id="joyLeft" style="width:200px;height:200px;margin-bottom:20px;float:left;"></div>
+
+    <button id="fullscreenBtn" onclick="openFullscreen();">Open full screen</button>
+    <div id="joyRight" style="width:200px;height:200px;margin-bottom:20px;float:right;"></div>
             <div class="telemetry">
                 <!-- throttle: <span id="throttleVal">0</span>%<br>
                 rotation: <span id="rotation">0</span>%<br><br>
 
                 move forward/backward: <span id="moveFb">0</span>%<br>
                 move left/right: <span id="moveLr">0</span>% -->
-                FPS: <span id="fps"></span><br>
 
-		<canvas id="roverVisualisation" width="600" height="800"></canvas><br>
-		<canvas id="joystickLeft" width="100" height="100"></canvas>
-		<canvas id="joystickRight" width="100" height="100"></canvas>
+                <!--<canvas id="roverVisualisation" width="600" height="800"></canvas><br>-->
+
 
             </div>
 
-		<iframe id="video" width="1220" height="920" src="http://10.42.0.112:8080/javascript_simple.html"></iframe>
 	    <!-- <div class="video"><video width="100%" autoplay="true" muted="muted" id="player"></video></div> -->
 
         </div>
@@ -112,6 +129,33 @@
     
 
 <script>
+
+
+
+/* Get the documentElement (<html>) to display the page in fullscreen */
+var elem = document.documentElement;
+
+/* View in fullscreen */
+function openFullscreen() {
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.webkitRequestFullscreen) { /* Safari */
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) { /* IE11 */
+    elem.msRequestFullscreen();
+  }
+}
+
+/* Close fullscreen */
+function closeFullscreen() {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.webkitExitFullscreen) { /* Safari */
+    document.webkitExitFullscreen();
+  } else if (document.msExitFullscreen) { /* IE11 */
+    document.msExitFullscreen();
+  }
+}
 	//let socket = io.connect('192.168.1.46:80');
 	const socket = io();
 
@@ -138,7 +182,9 @@
 		});
 	});
 */
-	Controller.search();
+
+  var joyLeft = new JoyStick('joyLeft');
+  var joyRight = new JoyStick('joyRight');
 
 	socket.on("roverStatus", (arg) =>
 	{
@@ -176,9 +222,6 @@
 	let fpsHandler = document.getElementById("fps");
 	let angleLeftHandler = document.getElementById("angleLeft");
 	let angleRightHandler = document.getElementById("angleRight");
-	let joystickLeftCanvas = document.getElementById("joystickLeft");
-	let joystickRightCanvas = document.getElementById("joystickRight");
-	let roverVisualisationCanvas = document.getElementById("roverVisualisation");
 	initRover();
 	gameLoop();
 

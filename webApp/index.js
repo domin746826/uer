@@ -67,18 +67,13 @@ let roverMotionData =
 		steeringY: 0
 	}
 };
-/*
-=======
 
->>>>>>> c5553cd72f31007af6936171f69a85234e07a3a5
 let cameraMotionData = 
 {
 	type: "cameraMotionData",
 	hAngle: 90,
 	vAngle: 90
 };
-<<<<<<< HEAD
-*/
 const options = {};
 io = socketIO(httpServer,options);
 httpServer.listen(80);
@@ -106,19 +101,19 @@ io.on("connection", (socket) =>
 		joystick = arg;
 	});
 
-	/*socket.on("dpad", (arg) =>
+	socket.on("dpad", (arg) =>
 	{
-		cameraMotionData.hAngle = arg.horizontal + 90;
-		cameraMotionData.vAngle = arg.vertical + 90;
+		cameraMotionData.hAngle = Math.floor(arg.horizontal + 90);
+		cameraMotionData.vAngle = Math.floor(arg.vertical + 90);
 	});
-*/
-	/*let cameraData = setInterval(() =>
+
+	let cameraData = setInterval(() =>
 
 	{	
 		let cameraMotionDataJson = JSON.stringify(cameraMotionData);
 		socket.emit("cameraMotionData", cameraMotionData);
-		port.write(cameraDataJson + "\n");
-	}, 50);*/
+		port.write(cameraMotionDataJson + "\n");
+	}, 20);
 
 
 	let roverLoop = setInterval(()=>
@@ -149,19 +144,19 @@ io.on("connection", (socket) =>
 			roverMotionData.right.frontServo = angleRight + 90;
 			roverMotionData.right.backServo = -angleRight + 90;*/
 
-			roverMotionData.left.frontServo = roverSteeringCalculated.left.front + 90;
-			roverMotionData.left.backServo = roverSteeringCalculated.left.back + 90;
-			roverMotionData.right.frontServo = roverSteeringCalculated.right.front + 90;
-			roverMotionData.right.backServo = roverSteeringCalculated.right.back + 90;
+			roverMotionData.left.frontServo = Math.floor(roverSteeringCalculated.left.front + 90);
+			roverMotionData.left.backServo = Math.floor(roverSteeringCalculated.left.back + 90);
+			roverMotionData.right.frontServo = Math.floor(roverSteeringCalculated.right.front + 90);
+			roverMotionData.right.backServo = Math.floor(roverSteeringCalculated.right.back + 90);
 
 			
-			roverMotionData.left.frontServo = clamp(roverMotionData.left.frontServo, 10, 170);
-			roverMotionData.left.backServo = clamp(roverMotionData.left.backServo, 10, 170);
-			roverMotionData.right.frontServo = clamp(roverMotionData.right.frontServo, 10, 170);
-			roverMotionData.right.backServo = clamp(roverMotionData.right.backServo, 10, 170);
+			roverMotionData.left.frontServo = Math.floor(clamp(roverMotionData.left.frontServo, 10, 170));
+			roverMotionData.left.backServo = Math.floor(clamp(roverMotionData.left.backServo, 10, 170));
+			roverMotionData.right.frontServo = Math.floor(clamp(roverMotionData.right.frontServo, 10, 170));
+			roverMotionData.right.backServo = Math.floor(clamp(roverMotionData.right.backServo, 10, 170));
 
-			roverMotionData.debug.steeringRadius = steeringRadius;
-			roverMotionData.debug.steeringY = steeringY;
+			roverMotionData.debug.steeringRadius = Math.floor(steeringRadius);
+			roverMotionData.debug.steeringY = Math.floor(steeringY);
 
 
 			let radiusDistance = Math.sqrt(Math.pow(steeringRadius, 2)+Math.pow(steeringY, 2))/100;
@@ -173,27 +168,27 @@ io.on("connection", (socket) =>
       let powerJoystick = joystick.left.y;
       if(radiusDistance < 5 && joystick.right.x != 0)
         powerJoystick = (powerJoystick*radiusDistance) / 6;
-			roverMotionData.left.frontPower = powerLF*(powerJoystick/2);
-			roverMotionData.left.backPower = powerLB*(powerJoystick/2);
-			roverMotionData.right.frontPower = powerRF*(powerJoystick/2);
-			roverMotionData.right.backPower = powerRB*(powerJoystick/2);
+			roverMotionData.left.frontPower = Math.floor(powerLF*(powerJoystick/2));
+			roverMotionData.left.backPower = Math.floor(powerLB*(powerJoystick/2));
+			roverMotionData.right.frontPower = Math.floor(powerRF*(powerJoystick/2));
+			roverMotionData.right.backPower = Math.floor(powerRB*(powerJoystick/2));
 		}
 		else
 		{			
-			roverMotionData.left.frontServo = joystick.right.x + 90;
-			roverMotionData.left.backServo = -joystick.right.x + 90;
-			roverMotionData.right.frontServo = joystick.right.x + 90;
-			roverMotionData.right.backServo = -joystick.right.x + 90;
+			roverMotionData.left.frontServo = Math.floor(joystick.right.x + 90);
+			roverMotionData.left.backServo = Math.floor(-joystick.right.x + 90);
+			roverMotionData.right.frontServo = Math.floor(joystick.right.x + 90);
+			roverMotionData.right.backServo = Math.floor(-joystick.right.x + 90);
 
-			roverMotionData.left.frontServo = clamp(roverMotionData.left.frontServo, 10, 170);
-			roverMotionData.left.backServo = clamp(roverMotionData.left.backServo, 10, 170);
-			roverMotionData.right.frontServo = clamp(roverMotionData.right.frontServo, 10, 170);
-			roverMotionData.right.backServo = clamp(roverMotionData.right.backServo, 10, 170);
+			roverMotionData.left.frontServo = Math.floor(clamp(roverMotionData.left.frontServo, 10, 170));
+			roverMotionData.left.backServo = Math.floor(clamp(roverMotionData.left.backServo, 10, 170));
+			roverMotionData.right.frontServo = Math.floor(clamp(roverMotionData.right.frontServo, 10, 170));
+			roverMotionData.right.backServo = Math.floor(clamp(roverMotionData.right.backServo, 10, 170));
 
-			roverMotionData.left.frontPower = joystick.left.y/2;
-			roverMotionData.left.backPower = joystick.left.y/2;
-			roverMotionData.right.frontPower = joystick.left.y/2;
-			roverMotionData.right.backPower = joystick.left.y/2;
+			roverMotionData.left.frontPower = Math.floor(joystick.left.y/2);
+			roverMotionData.left.backPower = Math.floor(joystick.left.y/2);
+			roverMotionData.right.frontPower = Math.floor(joystick.left.y/2);
+			roverMotionData.right.backPower = Math.floor(joystick.left.y/2);
 
 //			roverMotionData.debug.steeringY = steeringY;
 
@@ -205,7 +200,7 @@ io.on("connection", (socket) =>
 		let roverMotionDataJson = JSON.stringify(roverMotionData);
 		socket.emit("roverStatus", roverMotionData);
 		port.write(roverMotionDataJson + "\n");
-	}, 40);
+	}, 60);
 
 
 });
