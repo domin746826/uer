@@ -1,7 +1,7 @@
 # UER
 **NOTE:**
 <br>
-**Our rover won an accreditation to the national finals of Gdynia Explory Week!**<br>
+**U.E.R Rover Explory 2022 National Finalist project! **<br>
 https://m.facebook.com/Explory/
 
 **Hi there!** <br>
