@@ -1,7 +1,7 @@
 # UER
 **NOTE:**
 <br>
-**U.E.R Rover Explory 2022 National Finalist project! **<br>
+**U.E.R Rover Explory 2022 National Finalist project!**<br>
 https://m.facebook.com/Explory/
 
 **Hi there!** <br>
@@ -18,7 +18,7 @@ If you are looking for the simulation, it is available here https://domintech.dd
 <br><br>
 You need node.js, npm, socketio, serialport and express to get it running
 
-![alt text](https://github.com/domin746826/uer/blob/main/media/picture1.jpg?raw=true)
+![alt text](https://github.com/domin746826/uer/blob/main/media/IMG_2076.jpg?raw=true)
 ![alt text](https://github.com/domin746826/uer/blob/main/media/picture2.jpg?raw=true)
 ![caption](https://github.com/domin746826/uer/blob/main/media/video1.gif?raw=true)
 <br>
