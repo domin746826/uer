@@ -5,16 +5,22 @@
 https://m.facebook.com/Explory/
 
 **Hi there!** <br>
-Dear student, you're now on our education repository.
-To start learning click on code folders and read, analyze the code.
-If you want to design and try to build your own rover, go to our simulation down here
-and try on your 3D parts. <br>
-**We are still improving parts for our rover, especially a robotic arm. If you want to print the UER rover message me to get all the parts. rafalsawczyszyn@gmail.com**
+You're now on our UER repository.
+Universal Exploring Rover project was to project, simulate, 3d print, build, test and program fully functional rover capable to grab items and samples. 
+The goal has been fully achieved, so the project is finished.<br><br>
+Features & specification:
+- Controlled by any USB gamepad with analog joysticks (we use xbox clone gamepad)
+- Wi-Fi is used as link between controller as rover
+- Any fast enough device which support gamepad and Wi-Fi can be used as rover controller (for example: on my laptop Lenovo Legion Y520 everything works smooth)
+- First person view (depends on hardware configuration, we used cheap usb web camera and it works fine)
+- Capable of moving in any direction and rotating in any way just like the real rover (fully implemented Ackerman geometry)
+- Plug-in hardware configuration (any device supporting USB, Wi-Fi and Linux can be used as rover on-board computer because all peripherials are connected by USB (in our configuration there's camera on USB, Wi-Fi dongle and two arduinos: first controlling rover's motors, second controlling rover's arm)
+- Open source
 
-**For now our project is still in tests so the documentation for assembling the UER rover will be send to everyone who messaged me.**
+**The UER project is over. If you want to print the UER rover message me to get documentation and all parts not included in the repo. rafalsawczyszyn@gmail.com**
 
-Universal Exploring Rover base controller:<br>
-If you are looking for the simulation, it is available here https://domintech.ddns.net/js/projects/uer/ <br>
+~~Universal Exploring Rover base controller:<br>
+If you are looking for the simulation, it is available here https://domintech.ddns.net/js/projects/uer/~~<br>
 <br><br>
 You need node.js, npm, socketio, serialport and express to get it running
 
