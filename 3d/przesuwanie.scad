@@ -1,0 +1,1 @@
+translate([0, 10, 0]) import("/home/dominik/Pobrane/axisHolder.stl", convexity=3);
