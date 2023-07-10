@@ -1,7 +1,31 @@
 window.setInterval(() =>
 {
-	socket.emit("joystick", filteredJoystick);
-}, 40);
+	switch(roverMode)
+  {
+    case 1:
+      socket.emit("joystick", filteredJoystick);
+      break;
+
+    case 2:
+      socket.emit("roboticArm", roboticArmData);
+      break;
+  }
+}, 50);
+
+window.setInterval(() =>
+{
+	if(roboticArmState == 1)
+	{
+socket.emit("enableArm");
+armModeHandler.innerText = "enabled";
+}
+	else
+{
+	socket.emit("disableArm");
+armModeHandler.innerText = "disable";
+}
+
+}, 200);
 
 
 function onRoverStatus(arg)
@@ -17,9 +41,17 @@ window.setInterval(() =>
 
 window.setInterval(() =>
 {
-	socket.emit("dpad", optimizedDpad);
+	if(roverMode == 1)
+    socket.emit("dpad", optimizedDpad);
   
 }, 20);
+
+window.setInterval(() =>
+{
+	if(roverMode == 2)
+    socket.emit("grabber", grabber);
+  
+}, 50);
 
 function redrawJoystick(joystickCanvas, x, y)
 {

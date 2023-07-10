@@ -14,15 +14,17 @@ const uint8_t correctionFR = -2; //angle decreases - wheel turns left
 const uint8_t correctionRL = -4;
 const uint8_t correctionRR = 5;*/
 
-const int8_t correctionFL = 1; //angle corrections for servo
-const int8_t correctionFR = -6; //angle decreases - wheel turns left
-const int8_t correctionRL = -2;
-const int8_t correctionRR = 2;
+const int8_t correctionFL = 4; //angle corrections for servo
+const int8_t correctionFR = -2; //angle decreases - wheel turns left
+const int8_t correctionRL = 0;
+const int8_t correctionRR = 0;
 
 Servo servoFL;
 Servo servoFR;
 Servo servoRL;
 Servo servoRR;
+
+Servo grabber;
 
 Servo servoCameraHorizontal;
 Servo servoCameraVertical;
@@ -48,6 +50,8 @@ void setup()
   servoRR.attach(9);
   servoCameraHorizontal.attach(10);
   servoCameraVertical.attach(11);
+  grabber.attach(12);
+
 
   servoFL.write(90 + correctionFL); //there is no protection against setting too small or too big
   servoFR.write(90 + correctionFR); //angle so you need to limit the angles on the Raspberry Pi
@@ -103,13 +107,19 @@ void loop() //TODO convert to non-blocking loop
     servoCameraHorizontal.write((int) jsonData["hAngle"]);
     servoCameraVertical.write((int) jsonData["vAngle"]);
   }
+  else if(jsonType.equals("grabber"))
+  {
+    grabber.write((int) jsonData["val"]);
+  }
+  else if(jsonType.equals("identifyDevice"))
+  {
+    Serial.println("movement");
+  }
 
 }
 
 void onTimeout(int timeoutVariant)
 {
-  
-
   switch(timeoutVariant)
   {
     case READLINE_TIMEOUT:    
@@ -117,15 +127,15 @@ void onTimeout(int timeoutVariant)
       break;
 
     case DATARECEIVED_TIMEOUT:
-    servoFL.write(90 + correctionFL);
-  servoRL.write(90 + correctionRL);
-  servoFR.write(90 + correctionFR);
-  servoRR.write(90 + correctionRR);
+      servoFL.write(90 + correctionFL);
+      servoRL.write(90 + correctionRL);
+      servoFR.write(90 + correctionFR);
+      servoRR.write(90 + correctionRR);
 
-  analogWrite(2, 0); 
-  analogWrite(3, 0);
-  analogWrite(4, 0);
-  analogWrite(5, 0);
+      analogWrite(2, 0); 
+      analogWrite(3, 0);
+      analogWrite(4, 0);
+      analogWrite(5, 0);
       Serial.println(TIMEOUTERROR_DATARECEIVING);
       break;
 

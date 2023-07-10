@@ -13,6 +13,70 @@ const socketIO = require("socket.io")
 const {SerialPort, ReadlineParser} = require('serialport')
 const { spawn } = require("child_process");
 
+let portMovement, portRoboticArm;
+
+let portsReady = false;
+
+let checkType =
+{
+  type: "identifyDevice"
+};
+
+let enableArm = 
+{
+type: "enable"
+};
+
+let disableArm = 
+{
+
+type: "disable"
+};
+
+const port = new SerialPort({
+	path: '/dev/ttyUSB0',
+	baudRate: 115200,
+});
+
+/*const port2 = new SerialPort({
+	path: '/dev/ttyUSB1',
+	baudRate: 115200,
+});*/
+
+
+setTimeout(()=>
+{
+  port.write(JSON.stringify(checkType)+"\n");
+  console.log(JSON.stringify(checkType));
+  console.log("sent device identify packet");
+}, 1800);
+
+const parser = new ReadlineParser();
+port.pipe(parser);
+parser.on('data', (arg)=>
+{
+  console.log(arg); 
+  if(arg.includes("movement"))
+  {
+
+    console.log("got it, ttyUSB0 is movement")
+    portMovement = port;
+    portRoboticArm = new SerialPort({
+      path: '/dev/ttyUSB1', baudRate: 115200});
+    portsReady = true;
+  }
+  else if(arg == "roboticArm")
+  {
+    console.log("got it, ttyUSB1 is movement")
+    portRoboticArm = port;
+    portMovement = new SerialPort({
+      path: '/dev/ttyUSB1', baudRate: 115200});
+    portsReady = true;
+  }
+});
+
+
+
 let joystick = 
 {
 	left:
@@ -68,10 +132,21 @@ let roverMotionData =
 	}
 };
 
-let checkType =
+let grabber =
 {
-  type: "identifyDevice"
+  val: 90
 };
+
+let roboticArmData =
+{
+  type: "roboticArmData",
+  firstJoint: 0,
+  secondJoint: 0,
+  thirdJoint: 0,
+  fourthJoint: 0
+};
+
+
 
 let cameraMotionData = 
 {
@@ -101,6 +176,49 @@ io.on("connection", (socket) =>
 		});
 	});*/
 
+
+  socket.on("roboticArm", (arg) =>
+  {
+    roboticArmData = arg;
+  });
+
+  socket.on("grabber", (arg) =>
+  {
+    grabber = arg;
+  });
+
+socket.on("enableArm", (arg) =>
+{
+if(portsReady)
+	portRoboticArm.write(JSON.stringify(enableArm)+'\n');
+console.log("\n\nenabledarm\n\n");
+});
+
+socket.on("disableArm", (arg) =>
+{
+if(portsReady)
+	portRoboticArm.write(JSON.stringify(disableArm)+'\n');
+});
+
+
+
+  let grabberData = setInterval(()=>
+  {
+    if(portsReady)
+    {
+      portMovement.write(JSON.stringify(grabber)+"\n");
+    }
+  }, 80);
+
+  let roboticArmLoop = setInterval(()=>
+  {
+    if(portsReady)
+    {
+      portRoboticArm.write(JSON.stringify(roboticArmData)+"\n");
+      console.log(JSON.stringify(roboticArmData)+"\n");
+    }
+  }, 50);
+
 	socket.on("joystick", (arg) =>
 	{
 		joystick = arg;
@@ -117,7 +235,8 @@ io.on("connection", (socket) =>
 	{	
 		let cameraMotionDataJson = JSON.stringify(cameraMotionData);
 		socket.emit("cameraMotionData", cameraMotionData);
-		port.write(cameraMotionDataJson + "\n");
+		if(portsReady)
+      portMovement.write(cameraMotionDataJson + "\n");
 	}, 20);
 
 
@@ -197,26 +316,13 @@ io.on("connection", (socket) =>
 
 		let roverMotionDataJson = JSON.stringify(roverMotionData);
 		socket.emit("roverStatus", roverMotionData);
-		port.write(roverMotionDataJson + "\n");
+		if(portsReady)
+		  portMovement.write(roverMotionDataJson + "\n");
 	}, 60);
 
 
 });
 
-
-const port = new SerialPort({
-	path: '/dev/ttyUSB0',
-	baudRate: 115200,
-});
-
-/*const port2 = new SerialPort({
-	path: '/dev/ttyUSB1',
-	baudRate: 115200,
-});*/
-
-const parser = new ReadlineParser();
-port.pipe(parser);
-parser.on('data', console.log);
 
 console.log("Server started");
 

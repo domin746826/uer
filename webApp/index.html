@@ -34,7 +34,7 @@
             height: auto;
             float: left;
 
-            margin: 20px;
+            margin: 10px;
 
         }
 
@@ -96,11 +96,12 @@
                 move forward/backward: <span id="moveFb">0</span>%<br>
                 move left/right: <span id="moveLr">0</span>% -->
                 FPS: <span id="fps"></span><br>
+                Mode: <span id="mode">idle</span><br>
+		Arm <span id="armMode">disabled</span><br>
 
 		<canvas id="roverVisualisation" width="600" height="800"></canvas><br>
 		<canvas id="joystickLeft" width="100" height="100"></canvas>
 		<canvas id="joystickRight" width="100" height="100"></canvas>
-
             </div>
 
 		<iframe id="video" width="1220" height="920" src="http://10.42.0.112:8080/javascript_simple.html"></iframe>
@@ -173,7 +174,13 @@
 			steeringY: 0
 		}
 	};
+
+  let roverMode = 0; //0 - idle, 1 - movement, 2 - roboticArm
+
 	let fpsHandler = document.getElementById("fps");
+  let modeHandler = document.getElementById("mode");
+	let roboticArmState = 0;
+	let armModeHandler = document.getElementById("armMode");
 	let angleLeftHandler = document.getElementById("angleLeft");
 	let angleRightHandler = document.getElementById("angleRight");
 	let joystickLeftCanvas = document.getElementById("joystickLeft");
